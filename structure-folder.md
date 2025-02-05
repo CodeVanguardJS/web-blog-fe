@@ -1,73 +1,73 @@
 📂 Struktur Folder Kompleks dengan Atomic Design di React
 
 /src
-  /assets              # Statis assets seperti gambar, ikon, font
-    ├── images/
-    ├── icons/
-  
-  /components          # Semua komponen berdasarkan Atomic Design
-    /atoms             # Komponen UI terkecil
-      ├── Button.jsx
-      ├── Input.jsx
-      ├── Label.jsx
-      ├── Icon.jsx
-    /molecules         # Gabungan beberapa atom
-      ├── SearchBar.jsx
-      ├── FormField.jsx
-    /organisms         # Gabungan beberapa molecules
-      ├── Navbar.jsx
-      ├── Sidebar.jsx
-      ├── ProductCard.jsx
-    /templates         # Layout dasar halaman
-      ├── DashboardTemplate.jsx
-      ├── AuthTemplate.jsx
-    /pages             # Halaman lengkap
-      ├── HomePage.jsx
-      ├── LoginPage.jsx
-      ├── ProductPage.jsx
-      ├── DashboardPage.jsx
+/assets # Statis assets seperti gambar, ikon, font
+├── images/
+├── icons/
 
-  /hooks               # Custom Hooks
-    ├── useAuth.js
-    ├── useFetch.js
-    ├── useTheme.js
+/components # Semua komponen berdasarkan Atomic Design
+/atoms # Komponen UI terkecil
+├── Button.jsx
+├── Input.jsx
+├── Label.jsx
+├── Icon.jsx
+/molecules # Gabungan beberapa atom
+├── SearchBar.jsx
+├── FormField.jsx
+/organisms # Gabungan beberapa molecules
+├── Navbar.jsx
+├── Sidebar.jsx
+├── ProductCard.jsx
+/templates # Layout dasar halaman
+├── DashboardTemplate.jsx
+├── AuthTemplate.jsx
+/pages # Halaman lengkap
+├── HomePage.jsx
+├── LoginPage.jsx
+├── ProductPage.jsx
+├── DashboardPage.jsx
 
-  /context             # Global Context API
-    ├── AuthContext.js
-    ├── ThemeContext.js
-  
-  /services            # API Calls atau Interaksi dengan Backend
-    ├── authService.js
-    ├── productService.js
+/hooks # Custom Hooks
+├── useAuth.js
+├── useFetch.js
+├── useTheme.js
 
-  /store               # Manajemen State (Redux / Zustand / Jotai)
-    ├── authSlice.js
-    ├── productSlice.js
-    ├── store.js
+/context # Global Context API
+├── AuthContext.js
+├── ThemeContext.js
 
-  /routes              # Konfigurasi Routing React Router
-    ├── routes.js
-    ├── PrivateRoute.js
-  
-  /utils               # Helper Functions
-    ├── formatDate.js
-    ├── calculateDiscount.js
+/services # API Calls atau Interaksi dengan Backend
+├── authService.js
+├── productService.js
 
-  /config              # Konfigurasi umum (misalnya API URL)
-    ├── constants.js
-    ├── env.js
+/store # Manajemen State (Redux / Zustand / Jotai)
+├── authSlice.js
+├── productSlice.js
+├── store.js
 
-  /styles              # Global Styles atau CSS Modules
-    ├── global.css
-    ├── themes.css
+/routes # Konfigurasi Routing React Router
+├── routes.js
+├── PrivateRoute.js
 
-  /tests               # Unit & Integration Testing
-    ├── components/
-    ├── pages/
-    ├── utils/
+/utils # Helper Functions
+├── formatDate.js
+├── calculateDiscount.js
 
-  /App.jsx             # Root Component
-  /main.jsx            # Entry Point
+/config # Konfigurasi umum (misalnya API URL)
+├── constants.js
+├── env.js
+
+/styles # Global Styles atau CSS Modules
+├── global.css
+├── themes.css
+
+/tests # Unit & Integration Testing
+├── components/
+├── pages/
+├── utils/
+
+/App.jsx # Root Component
+/main.jsx # Entry Point
 
 📌 Penjelasan Tambahan
 

@@ -1,13 +1,22 @@
-import RegistrationPage from "./pages/RegistrationPage"
-import Navbar from "./components/Navbar"
+import { Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import HomePage from "./pages/HomePage";
+import RegistrationPage from "./pages/RegistrationPage";
+import AboutPage from "./pages/AboutPage";
 
-const Home = () => {
+const App = () => {
   return (
     <div>
       <Navbar />
-      <RegistrationPage/>
+      <div className="pt-[60px]">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/registration" element={<RegistrationPage />} />
+          <Route path="/about" element={<AboutPage />} />
+        </Routes>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default App;
