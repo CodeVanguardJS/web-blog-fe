@@ -1,6 +1,8 @@
+import Footer from "../components/Footer";
+
 const AboutPage = () => {
   return (
-    <div className="container mx-auto p-6 bg-backgroundlight text-backgrounddark">
+    <div className="min-h-screen mx-auto p-6 bg-backgroundlight text-backgrounddark">
       {/* Hero Section */}
       <div
         className="relative bg-cover bg-center h-96"
@@ -18,7 +20,7 @@ const AboutPage = () => {
 
       {/* Introduction */}
       <div className="max-w-4xl mx-auto text-center mt-12">
-        <p className="text-lg mb-6">
+        <p className="text-xl mb-6">
           We&apos;re dedicated to sharing delicious recipes, creative ideas, and
           culinary inspiration to elevate your cooking experience. Whether
           you&apos;re a home cook or a foodie adventurer, our blog is here for
@@ -32,7 +34,7 @@ const AboutPage = () => {
       </div>
 
       {/* Highlights Section */}
-      <div className="text-center mt-12">
+      <div className="text-center mt-12 bg-secondary p-8">
         <h2 className="text-3xl font-semibold mb-8">
           What You&apos;ll Love About Us
         </h2>
@@ -68,44 +70,49 @@ const AboutPage = () => {
           {/* Team Member 1 */}
           <div className="text-center">
             <img
-              src="/team1.jpg"
-              alt="Team Member 1"
-              className="w-40 h-40 rounded-full mx-auto mb-4 shadow-lg"
+              src="/luthfi.jpg"
+              alt="Member 1"
+              className="w-40 h-40 rounded-full mx-auto mb-4 shadow-lg object-cover"
             />
             <h3 className="text-xl font-bold">Muhammad Luthfi Zuhair</h3>
             <p className="text-gray-600">Frontend Developer</p>
             <p className="mt-2 text-sm text-gray-700">
-              Luthfi is a passionate chef who loves experimenting with new
-              ingredients and techniques to create unique recipes.
+              Luthfi is responsible for crafting visually appealing and
+              user-friendly interfaces. He specializes in React, Tailwind CSS,
+              and modern web technologies to ensure a seamless user experience.
             </p>
           </div>
           {/* Team Member 2 */}
           <div className="text-center">
             <img
-              src="/team2.jpg"
-              alt="Team Member 2"
-              className="w-40 h-40 rounded-full mx-auto mb-4 shadow-lg"
+              src="/arief.jpg"
+              alt="Member 2"
+              className="w-40 h-40 rounded-full mx-auto mb-4 shadow-lg object-cover"
             />
             <h3 className="text-xl font-bold">Muhammad Syaifullah Al-Arief</h3>
             <p className="text-gray-600">Backend developer</p>
             <p className="mt-2 text-sm text-gray-700">
-              Arief captures the beauty of food through her lens, bringing every
-              dish to life with stunning visuals.
+              Arief specializes in building scalable and efficient server-side
+              applications. He works with Node.js, Express, PostgreSQL, and
+              Prisma to ensure data security and smooth API integration.
             </p>
           </div>
         </div>
       </div>
 
       {/* Conclusion */}
-      <div className="text-center mt-16">
-        <p className="text-lg text-white mb-6 bg-backgrounddark">
+      <div className="text-center mt-16 py-12">
+        <p className="text-lg text-backgrounddark mb-6 bg-secondary p-8">
           Join us on a flavorful journey as we create, taste, and share
           unforgettable dishes.
         </p>
-        <p className="text-2xl font-semibold">
+        <p className="text-2xl font-semibold py-12">
           Let&apos;s make something delicious together!
         </p>
       </div>
+
+<Footer/>
+
     </div>
   );
 };
