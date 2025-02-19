@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
+import { Link } from "react-router-dom"; // Import Link dari react-router-dom
 
 const Footer = () => {
   const [email, setEmail] = useState("");
@@ -11,11 +12,11 @@ const Footer = () => {
       title: "Subscribed!",
       text: `You've subscribed with: ${email}`,
       icon: "success",
-      timer: 1200, 
+      timer: 1200,
       showConfirmButton: false,
     });
 
-    setEmail(""); 
+    setEmail("");
   };
 
   return (
@@ -23,20 +24,16 @@ const Footer = () => {
       <footer className="footer bg-backgrounddark text-white p-10 justify-between">
         <nav>
           <h6 className="footer-title">Wisk Takers</h6>
-          <a className="link link-hover"
-            href="/about"
-          >About</a>
-          <a className="link link-hover"
-            href="/">Recipes</a>
-          <a className="link link-hover">Contact</a>
-          <a className="link link-hover">Advertisement</a>
+          <Link to="/about" className="link link-hover">About</Link>
+          <Link to="/" className="link link-hover">Recipes</Link>
+          
         </nav>
         <nav>
           <h6 className="footer-title">Food & Recipes</h6>
-          <a className="link link-hover">Quick and Easy</a>
-          <a className="link link-hover">Vegan Recipes</a>
-          <a className="link link-hover">Pasta Recipes</a>
-          <a className="link link-hover">Soup Recipes</a>
+          <Link to="/quick-easy" className="link link-hover">Quick and Easy</Link>
+          <Link to="/vegan-recipes" className="link link-hover">Vegan Recipes</Link>
+          <Link to="/pasta-recipes" className="link link-hover">Pasta Recipes</Link>
+          <Link to="/soup-recipes" className="link link-hover">Soup Recipes</Link>
         </nav>
 
         <form onSubmit={handleSubmit}>
@@ -52,6 +49,7 @@ const Footer = () => {
                 className="input input-bordered join-item bg-backgroundlight text-black"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                required
               />
               <button
                 type="submit"
