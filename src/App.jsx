@@ -1,18 +1,44 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import HomePage from "./pages/HomePage";
 import RegistrationPage from "./pages/RegistrationPage";
 import AboutPage from "./pages/AboutPage";
+import CategoriesAdminPage from "./pages/dashboard/CategoriesAdminPage";
+import SideBar from "./components/Sidebar";
+import { useEffect, useState } from "react";
 
 const App = () => {
+  // eslint-disable-next-line no-unused-vars
+  const [darkMode, setDarkMode] = useState(() => {
+    return localStorage.getItem("theme") === "dark"; // Default light mode
+  });
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [darkMode]);
+
+  const location = useLocation();
+
+  const listDashboard = ["/dashboard", "/categories"];
+  const isDashboardPage = listDashboard.includes(location.pathname);
   return (
-    <div>
-      <Navbar />
-      <div className="pt-[60px]">
+    <div className="flex min-h-screen bg-white text-black dark:bg-gray-900 dark:text-white">
+      {!isDashboardPage && <Navbar />}
+      {isDashboardPage && <SideBar />}
+      {/* <button className="absolute top-4 right-4" onClick={() => setDarkMode(!darkMode)} type="button">toogle</button> */}
+      <div className={`mb-5 w-full ${isDashboardPage ? "pt-0 " : "pt-[60px]"}`}>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/registration" element={<RegistrationPage />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/dashboard" element={<h1>Dashboard</h1>} />
+          <Route path="/categories" element={<CategoriesAdminPage />} />
         </Routes>
       </div>
     </div>
