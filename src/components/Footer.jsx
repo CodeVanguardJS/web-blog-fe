@@ -23,8 +23,11 @@ const Footer = () => {
       <footer className="footer bg-backgrounddark text-white p-10 justify-between">
         <nav>
           <h6 className="footer-title">Wisk Takers</h6>
-          <a className="link link-hover">About</a>
-          <a className="link link-hover">Recipes</a>
+          <a className="link link-hover"
+            href="/about"
+          >About</a>
+          <a className="link link-hover"
+            href="/">Recipes</a>
           <a className="link link-hover">Contact</a>
           <a className="link link-hover">Advertisement</a>
         </nav>
