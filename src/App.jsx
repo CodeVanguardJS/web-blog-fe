@@ -6,6 +6,7 @@ import AboutPage from "./pages/AboutPage";
 import CategoriesAdminPage from "./pages/dashboard/CategoriesAdminPage";
 import SideBar from "./components/Sidebar";
 import { useEffect, useState } from "react";
+import UpdateProfilePage from "./pages/dashboard/UpdateProfilePage";
 
 const App = () => {
   // eslint-disable-next-line no-unused-vars
@@ -25,7 +26,7 @@ const App = () => {
 
   const location = useLocation();
 
-  const listDashboard = ["/dashboard", "/categories"];
+  const listDashboard = ["/dashboard", "/categories", "/profile/update"];
   const isDashboardPage = listDashboard.includes(location.pathname);
   return (
     <div className="flex min-h-screen bg-white text-black dark:bg-gray-900 dark:text-white">
@@ -39,6 +40,7 @@ const App = () => {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/dashboard" element={<h1>Dashboard</h1>} />
           <Route path="/categories" element={<CategoriesAdminPage />} />
+          <Route path="/profile/update" element={<UpdateProfilePage />} />
         </Routes>
       </div>
     </div>
