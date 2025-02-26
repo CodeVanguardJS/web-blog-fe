@@ -4,6 +4,7 @@ import HomePage from "./pages/HomePage";
 import RegistrationPage from "./pages/RegistrationPage";
 import AboutPage from "./pages/AboutPage";
 import CategoryPage from "./pages/CategoryPage";
+import BlogPost from "./pages/BlogPost";
 
 const App = () => {
   return (
@@ -15,6 +16,7 @@ const App = () => {
           <Route path="/register" element={<RegistrationPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/category/:category_id" element={<CategoryPage />} />
+          <Route path="/articles/:id" element={<BlogPost />} />
         </Routes>
       </div>
     </div>
