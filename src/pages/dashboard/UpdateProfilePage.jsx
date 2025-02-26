@@ -10,7 +10,7 @@ const UpdateProfilePage = () => {
   });
   // const [avatar, setAvatar] = useState(null);
 	return (
-    <div className="flex h-screen w-full items-center justify-center bg-orange-100">
+    <div className="flex h-full w-full items-center justify-center bg-orange-100">
       <motion.div
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
