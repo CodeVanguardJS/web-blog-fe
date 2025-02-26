@@ -6,6 +6,7 @@ import AboutPage from "./pages/AboutPage";
 import CategoriesAdminPage from "./pages/dashboard/CategoriesAdminPage";
 import SideBar from "./components/Sidebar";
 import { useEffect, useState } from "react";
+import LoginPage from "./pages/LoginPage";
 
 const App = () => {
   // eslint-disable-next-line no-unused-vars
@@ -36,6 +37,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/register" element={<RegistrationPage />} />
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/dashboard" element={<h1>Dashboard</h1>} />
           <Route path="/categories" element={<CategoriesAdminPage />} />
