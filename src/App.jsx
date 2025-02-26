@@ -33,7 +33,7 @@ const App = () => {
       {!isDashboardPage && <Navbar />}
       {isDashboardPage && <SideBar />}
       {/* <button className="absolute top-4 right-4" onClick={() => setDarkMode(!darkMode)} type="button">toogle</button> */}
-      <div className={`mb-5 w-full ${isDashboardPage ? "pt-0 " : "pt-[60px]"}`}>
+      <div className={`w-full ${isDashboardPage ? "pt-0 " : "pt-[60px]"}`}>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/register" element={<RegistrationPage />} />

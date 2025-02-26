@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 const DashboardPage = () => {
 	return (
-    <div className="min-h-screen bg-orange-50 p-6">
+    <div className="bg-orange-50 p-6 h-full">
 
       {/* Stats Section */}
       <div className="grid grid-cols-3 gap-4 mb-8">
