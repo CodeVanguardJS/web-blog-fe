@@ -6,6 +6,7 @@ import AboutPage from "./pages/AboutPage";
 import CategoriesAdminPage from "./pages/dashboard/CategoriesAdminPage";
 import SideBar from "./components/Sidebar";
 import { useEffect, useState } from "react";
+import ArticleTablePage from "./pages/dashboard/ArticleTablePage";
 
 const App = () => {
   // eslint-disable-next-line no-unused-vars
@@ -25,19 +26,20 @@ const App = () => {
 
   const location = useLocation();
 
-  const listDashboard = ["/dashboard", "/categories"];
+  const listDashboard = ["/dashboard", "/categories", "/articles/list"];
   const isDashboardPage = listDashboard.includes(location.pathname);
   return (
     <div className="flex min-h-screen bg-white text-black dark:bg-gray-900 dark:text-white">
       {!isDashboardPage && <Navbar />}
       {isDashboardPage && <SideBar />}
       {/* <button className="absolute top-4 right-4" onClick={() => setDarkMode(!darkMode)} type="button">toogle</button> */}
-      <div className={`mb-5 w-full ${isDashboardPage ? "pt-0 " : "pt-[60px]"}`}>
+      <div className={`w-full ${isDashboardPage ? "pt-0 " : "pt-[60px]"}`}>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/register" element={<RegistrationPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/dashboard" element={<h1>Dashboard</h1>} />
+          <Route path="/articles/list" element={<ArticleTablePage />} />
           <Route path="/categories" element={<CategoriesAdminPage />} />
         </Routes>
       </div>
