@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
-import { Link } from "react-router-dom"; // Import Link dari react-router-dom
+import { Link } from "react-router-dom"; 
 
 const Footer = () => {
   const [email, setEmail] = useState("");

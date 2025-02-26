@@ -14,7 +14,7 @@ const CategoryPage = () => {
     const fetchArticles = async () => {
       try {
         const response = await fetch(
-          `https://6ee3d88c-4e61-40dc-9cb3-172889b02220.mock.pstmn.io/article/category/${category_id}`
+          `http://localhost:3000/api/v1/article/category/${category_id}`,
         );
 
         if (!response.ok) {
