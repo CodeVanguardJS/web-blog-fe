@@ -32,7 +32,7 @@ const SideBar = () => {
                 </Link>
               </li>
               <li className="hover:bg-orange-800 w-full py-5">
-                <Link to="/recipes" className="text-white hover:text-secondary">
+                <Link to="/articles/list" className="text-white hover:text-secondary">
                   Article
                 </Link>
               </li>
