@@ -1,12 +1,19 @@
 import { Bookmark, BookmarkCheck } from "lucide-react";
 import propTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
+
 const CardArticle = ({
+  id,
   title,
   description,
   photo_url,
   total_like,
   is_bookmark,
 }) => {
+  const navigate = useNavigate();
+  const handleReadMore = () => {
+    navigate(`/article/${id}`);
+  };
   return (
     <div className="w-full flex bg-white shadow-md rounded-lg p-4 pb-8 max-w-none mx-auto justify-between mb-6">
       <div className="relative w-48 h-48 flex-shrink-0">
@@ -15,15 +22,23 @@ const CardArticle = ({
           alt={title}
           className="w-full h-full object-cover rounded-md"
         />
-        <button className="absolute bottom-[-20px] left-1/2 -translate-x-1/2  bg-primary text-white hover:bg-secondary hover:text-backgrounddark px-3 py-2 rounded-md shadow-md text-sm whitespace-nowrap">
+        <button
+          onClick={handleReadMore}
+          className="absolute bottom-[-20px] left-1/2 -translate-x-1/2  bg-primary text-white hover:bg-secondary hover:text-backgrounddark px-3 py-2 rounded-md shadow-md text-sm whitespace-nowrap
+        "
+        >
           Read More
         </button>
       </div>
 
       <div className="flex flex-col justify-between flex-1 ml-4">
         <div>
-          <h2 className="text-2xl font-bold text-backgrounddark text-center">{title}</h2>
-          <p className="text-gray-600 text-sm mt-1 text-center">{description}</p>
+          <h2 className="text-2xl font-bold text-backgrounddark text-center">
+            {title}
+          </h2>
+          <p className="text-gray-600 text-sm mt-1 text-center">
+            {description}
+          </p>
         </div>
 
         <div className="flex justify-between items-center mt-2">
@@ -40,6 +55,7 @@ const CardArticle = ({
 };
 
 CardArticle.propTypes = {
+  id: propTypes.number,
   title: propTypes.string,
   description: propTypes.string,
   photo_url: propTypes.string,

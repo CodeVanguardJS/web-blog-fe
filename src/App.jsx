@@ -7,6 +7,9 @@ import CategoriesAdminPage from "./pages/dashboard/CategoriesAdminPage";
 import SideBar from "./components/Sidebar";
 import { useEffect, useState } from "react";
 import ArticleTablePage from "./pages/dashboard/ArticleTablePage";
+import CategoryPage from "./pages/CategoryPage";
+import BlogPost from "./pages/BlogPost";
+import UpdateProfilePage from "./pages/dashboard/UpdateProfilePage";
 
 const App = () => {
   // eslint-disable-next-line no-unused-vars
@@ -26,7 +29,12 @@ const App = () => {
 
   const location = useLocation();
 
-  const listDashboard = ["/dashboard", "/categories", "/articles/list"];
+  const listDashboard = [
+    "/dashboard",
+    "/categories",
+    "/articles/list",
+    "/profile/update",
+  ];
   const isDashboardPage = listDashboard.includes(location.pathname);
   return (
     <div className="flex min-h-screen bg-white text-black dark:bg-gray-900 dark:text-white">
@@ -41,6 +49,9 @@ const App = () => {
           <Route path="/dashboard" element={<h1>Dashboard</h1>} />
           <Route path="/articles/list" element={<ArticleTablePage />} />
           <Route path="/categories" element={<CategoriesAdminPage />} />
+          <Route path="/category/:category_id" element={<CategoryPage />} />
+          <Route path="/articles/:id" element={<BlogPost />} />
+          <Route path="/profile/update" element={<UpdateProfilePage />} />
         </Routes>
       </div>
     </div>
