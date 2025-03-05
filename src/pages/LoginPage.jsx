@@ -84,7 +84,7 @@ const LoginPage = () => {
             onChange={handleInputChange}
             className="w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-highlightAction bg-backgroundlight text-backgrounddark"
           />
-          
+
           <button
             type="submit"
             className="bg-highlightAction text-backgrounddark font-semibold w-full py-3 rounded-md hover:bg-accent hover:text-white transition-all duration-300"
@@ -98,25 +98,25 @@ const LoginPage = () => {
       <div
         className="w-full md:w-2/3 flex items-center justify-center bg-cover bg-center "
         style={{
-          backgroundImage: "url('/mainfood.jpg')",
+          backgroundImage:
+            "url('https://media-cdn.grubhub.com/grubhub-marketing/image/upload/f_auto,fl_lossy/v1692270106/grubhubHomePage/sushi_homepage1.png')",
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
           imageRendering: "auto",
         }}
       >
         <div className="w-3/4 mx-auto">
-          <h2 className="font-display text-4xl font-bold text-backgrounddark mb-6">
+          <h2 className="font-display text-4xl font-bold text-white mb-6">
             Welcome!
           </h2>
-          <p className="font-sans px-2 text-backgrounddark text-xl text-justify font-bold leading-relaxed bg-highlightAction rounded-md bg-opacity-50">
-            Welcome to <span className="text-primary"> Whisk Takers</span>, a
-            food blog where bold flavors meet fearless cooking! Whether
-            you&apos;re a seasoned chef or a kitchen newbie, we’re here to
-            inspire your culinary adventures with easy-to-follow recipes,
-            creative cooking hacks, and stories that bring every dish to life.
-            From comforting classics to daring experiments, let’s whisk our way
-            to delicious discoveries together. Unleash your inner whisk taker
-            and join us on this flavorful journey!.
+          <p className="font-sans px-2 text-backgrounddark text-xl text-justify font-bold leading-relaxed bg-slate-100 rounded-md bg-opacity-50">
+            Welcome back to{" "}
+            <span className="text-primary"> Whisk Takers! </span>
+            Ready to continue your culinary journey? Log in to access your saved
+            recipes, explore new flavors, and connect with a community of
+            fearless food lovers. Whether you&apos;re here to revisit a favorite
+            dish or try something bold and new, your next delicious adventure
+            starts now. Let’s get whisking!
           </p>
         </div>
       </div>
