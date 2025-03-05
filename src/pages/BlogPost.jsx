@@ -21,7 +21,7 @@ const BlogPost = () => {
     const fetchArticle = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3000/api/v1/articles/${id}`
+          `${import.meta.env.VITE_BACKEND_API}/articles/${id}`
         );
         const data = await response.json();
         setArticle(data.data);
