@@ -14,7 +14,7 @@ const CategoryPage = () => {
     const fetchArticles = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3000/api/v1/article/category/${category_id}`,
+          `http://localhost:3000/api/v1/articles/category/${category_id}`
         );
 
         if (!response.ok) {
@@ -40,6 +40,7 @@ const CategoryPage = () => {
     <div className="min-h-screen mx-auto bg-backgroundlight p-6 pb-0">
       {articles.length > 0 && (
         <HeroArticle
+          id={articles[0].id}
           title={articles[0].title}
           photo_url={articles[0].photo_url}
           description={articles[0].description}
@@ -58,8 +59,6 @@ const CategoryPage = () => {
               title={article.title}
               description={article.description}
               photo_url={article.photo_url}
-              total_like={article.total_like}
-              is_bookmark={article.is_bookmark}
             />
           ))}
         </div>
