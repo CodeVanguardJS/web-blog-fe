@@ -38,7 +38,7 @@ const BlogPost = () => {
   useEffect(() => {
     const fetchRelatedArticles = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/v1/articles/101`);
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/articles/101`);
         const data = await response.json();
         setRelatedArticles(data.data ? [data.data] : []);
       } catch (error) {

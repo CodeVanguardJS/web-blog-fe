@@ -14,7 +14,7 @@ const CategoryPage = () => {
     const fetchArticles = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3000/api/v1/articles/category/${category_id}`
+          `${import.meta.env.VITE_BACKEND_API}/articles/category/${category_id}`
         );
 
         if (!response.ok) {
