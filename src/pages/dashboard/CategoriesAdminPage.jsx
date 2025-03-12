@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const CategoriesAdminPage = () => {
   // State untuk modal
@@ -12,40 +12,79 @@ const CategoriesAdminPage = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   // Data dummy untuk kategori
-  const [categories, setCategories] = useState([
-    { id: 1, name: "Technology", slug: "technology" },
-    { id: 2, name: "Health", slug: "health" },
-    { id: 3, name: "Finance", slug: "finance" },
-    { id: 4, name: "Education", slug: "education" },
-  ]);
+  const [categories, setCategories] = useState([  ]);
+
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_BACKEND_API}/categories`)
+      .then((res) => res.json())
+      .then((categories) => setCategories(categories.data))
+      .catch((error) => console.error("Error fetching categories:", error));
+  }, []);
 
   // Fungsi Tambah Kategori
   const handleCreateCategory = () => {
-    console.log("New Category:", categoryName);
-    setCategories([
-      ...categories,
-      { id: Date.now(), name: categoryName, slug: categoryName.toLowerCase() },
-    ]);
-    setCategoryName("");
-    setIsCreateModalOpen(false);
+    const newCategory = {
+      name: categoryName,
+      // slug: categoryName.toLowerCase(),
+    };
+
+    fetch(`${import.meta.env.VITE_BACKEND_API}/categories`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newCategory),
+    })
+      .then(async (res) => {
+        const text = await res.text();
+        console.log("Raw response:", text); // Debugging
+        return JSON.parse(text);
+      })
+      .then((category) => {
+        setCategories([...categories, category.data]);
+        setCategoryName("");
+        setIsCreateModalOpen(false);
+      })
+      .catch((error) => console.error("Error adding category:", error));
   };
 
   // Fungsi Update Kategori
   const handleUpdateCategory = () => {
-    console.log("Updated Category:", categoryName);
-    setCategories(
-      categories.map((cat) =>
-        cat.id === selectedCategory.id ? { ...cat, name: categoryName } : cat
-      )
-    );
-    setIsUpdateModalOpen(false);
+    if (!selectedCategory) return;
+
+    fetch(`${import.meta.env.VITE_BACKEND_API}/categories/${selectedCategory.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: categoryName,
+        // slug: categoryName.toLowerCase(),
+      }),
+    })
+      .then((res) => res.json())
+      .then((updatedCategory) => {
+        setCategories(
+          categories.map((cat) =>
+            cat.id === selectedCategory.id ? updatedCategory.data : cat
+          )
+        );
+        setIsUpdateModalOpen(false);
+      })
+      .catch((error) => console.error("Error updating category:", error));
   };
 
   // Fungsi Delete Kategori
   const handleDeleteCategory = () => {
-    console.log("Deleted Category:", selectedCategory.name);
-    setCategories(categories.filter((cat) => cat.id !== selectedCategory.id));
-    setIsDeleteModalOpen(false);
+    if (!selectedCategory) return;
+
+    fetch(
+      `${import.meta.env.VITE_BACKEND_API}/categories/${selectedCategory.id}`,
+      { method: "DELETE" }
+    )
+      .then(() => {
+        setCategories(
+          categories.filter((cat) => cat.id !== selectedCategory.id)
+        );
+        setIsDeleteModalOpen(false);
+      })
+      .catch((error) => console.error("Error deleting category:", error));
   };
 
   return (
@@ -116,7 +155,7 @@ const CategoriesAdminPage = () => {
         >
           <input
             type="text"
-            className="w-full p-2 border rounded-md mb-4"
+            className="w-full p-2 border rounded-md mb-4 bg-white text-slate-800"
             placeholder="Enter category name"
             value={categoryName}
             onChange={(e) => setCategoryName(e.target.value)}
@@ -140,7 +179,7 @@ const CategoriesAdminPage = () => {
         >
           <input
             type="text"
-            className="w-full p-2 border rounded-md mb-4"
+            className="w-full p-2 border rounded-md mb-4 bg-white text-slate-800"
             value={categoryName}
             onChange={(e) => setCategoryName(e.target.value)}
           />
