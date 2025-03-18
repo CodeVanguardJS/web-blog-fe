@@ -31,38 +31,39 @@ const RegistrationPage = () => {
     }
 
     if (password !== confirmPassword) {
-      setError("Passwords does not match");
+      setError("Passwords do not match");
       return;
     }
 
     try {
       const response = await fetch(
-        "https://eb23c63d-f941-4654-b10a-f5289655df8c.mock.pstmn.io/auth/register",
+        `${import.meta.env.VITE_BACKEND_API}/auth/register`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ name, email, password }),
-        },
+        }
       );
 
       const data = await response.json();
       console.log(data);
 
       if (!response.ok) {
-        setError(data.error || "Something went wrong");
-      } else {
-        Swal.fire({
-          title: "Registration Successful!",
-          text: "Account created successfully, please login.",
-          icon: "success",
-          confirmButtonText: "Login",
-        }).then(() => {
-          navigate("/login", { state: { success: "Registration successful!" } })
-        })
-        ;
+        setError(data.message || data.error || "Something went wrong");
+        return;
       }
-    } catch {
-      setError("Failed to connect to server");
+
+      Swal.fire({
+        title: "Registration Successful!",
+        text: "Account created successfully, please login.",
+        icon: "success",
+        confirmButtonText: "Login",
+      }).then(() => {
+        navigate("/login", { state: { success: "Registration successful!" } });
+      });
+
+    } catch (error) {
+      setError(error.message ||"Failed to connect to server");
     }
   };
 
@@ -73,7 +74,7 @@ const RegistrationPage = () => {
         <form onSubmit={handleSubmit} noValidate className="space-y-6 w-3/4">
           <h1 className="text-3xl font-bold text-center">Create Account</h1>
 
-          {error && <p className="text-red-950">{error}</p>}
+          {error && <p className="text-red">{error}</p>}
 
           <input
             type="text"
