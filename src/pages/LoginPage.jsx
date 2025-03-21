@@ -1,63 +1,7 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
+import useLogin from "../hooks/useLogin";
 
 const LoginPage = () => {
-  const navigate = useNavigate();
-
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
-  const [error, setError] = useState("");
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-
-    const { email, password } = formData;
-
-    if (!email || !password ) {
-      setError("All fields are required");
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        "https://eb23c63d-f941-4654-b10a-f5289655df8c.mock.pstmn.io/auth/register",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-        },
-      );
-
-      const data = await response.json();
-      console.log(data);
-
-      if (!response.ok) {
-        setError(data.error || "Something went wrong");
-      } else {
-        Swal.fire({
-          title: "Registration Successful!",
-          text: "Account created successfully, please login.",
-          icon: "success",
-          confirmButtonText: "Login",
-        }).then(() => {
-          navigate("/login", { state: { success: "Registration successful!" } })
-        })
-        ;
-      }
-    } catch {
-      setError("Failed to connect to server");
-    }
-  };
+  const { formData, error, handleInputChange, handleSubmit } = useLogin();
 
   return (
     <div className="min-h-screen flex bg-backgroundlight">
@@ -89,7 +33,7 @@ const LoginPage = () => {
             type="submit"
             className="bg-highlightAction text-backgrounddark font-semibold w-full py-3 rounded-md hover:bg-accent hover:text-white transition-all duration-300"
           >
-            Sign Up
+            Login
           </button>
         </form>
       </div>
