@@ -1,17 +1,27 @@
 import { motion } from "framer-motion";
 import { Pencil, Trash } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const ArticleTablePage = () => {
   const [activeTab, setActiveTab] = useState("published");
   const [articles, setArticles] = useState([
-    { id: 1, title: "React Basics", slug: "react-basics" },
-    { id: 2, title: "Advanced JavaScript", slug: "advanced-js" },
-    { id: 3, title: "CSS Grid Layout", slug: "css-grid-layout" },
-    { id: 4, title: "Node.js Crash Course", slug: "nodejs-crash-course" },
+    // { id: 1, title: "React Basics", slug: "react-basics" },
+    // { id: 2, title: "Advanced JavaScript", slug: "advanced-js" },
+    // { id: 3, title: "CSS Grid Layout", slug: "css-grid-layout" },
+    // { id: 4, title: "Node.js Crash Course", slug: "nodejs-crash-course" },
   ]);
   const [showModal, setShowModal] = useState(false);
   const [selectedArticle, setSelectedArticle] = useState(null);
+
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_BACKEND_API}/articles`)
+    .then((res) => res.json())
+    .then((articles) => {
+      console.log(articles.data)
+      setArticles(articles.data.data)
+    })
+    .catch((error) => console.error("Error fetching articles:", error));
+  }, []);
 
   const handleDelete = (article) => {
     setSelectedArticle(article);
