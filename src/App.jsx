@@ -11,6 +11,7 @@ import ArticleTablePage from "./pages/dashboard/ArticleTablePage";
 import CategoryPage from "./pages/CategoryPage";
 import BlogPost from "./pages/BlogPost";
 import UpdateProfilePage from "./pages/dashboard/UpdateProfilePage";
+import LoginPage from "./pages/LoginPage";
 
 const App = () => {
   // eslint-disable-next-line no-unused-vars
@@ -46,6 +47,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/register" element={<RegistrationPage />} />
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/articles/list" element={<ArticleTablePage />} />
