@@ -1,27 +1,15 @@
 import { motion } from "framer-motion";
 import { Pencil, Trash } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useArticles } from "../../hooks/useArticle";
+import ConfirmationModal from "../../components/ConfirmationModal";
 
 const ArticleTablePage = () => {
-  const [activeTab, setActiveTab] = useState("published");
-  const [articles, setArticles] = useState([
-    // { id: 1, title: "React Basics", slug: "react-basics" },
-    // { id: 2, title: "Advanced JavaScript", slug: "advanced-js" },
-    // { id: 3, title: "CSS Grid Layout", slug: "css-grid-layout" },
-    // { id: 4, title: "Node.js Crash Course", slug: "nodejs-crash-course" },
-  ]);
+  const { articles, loading, error, deleteArticle } = useArticles();
   const [showModal, setShowModal] = useState(false);
   const [selectedArticle, setSelectedArticle] = useState(null);
-
-  useEffect(() => {
-    fetch(`${import.meta.env.VITE_BACKEND_API}/articles`)
-    .then((res) => res.json())
-    .then((articles) => {
-      console.log(articles.data)
-      setArticles(articles.data.data)
-    })
-    .catch((error) => console.error("Error fetching articles:", error));
-  }, []);
+  const [activeTab, setActiveTab] = useState("published");
 
   const handleDelete = (article) => {
     setSelectedArticle(article);
@@ -29,26 +17,32 @@ const ArticleTablePage = () => {
   };
 
   const confirmDelete = () => {
-    setArticles(articles.filter((a) => a.id !== selectedArticle.id));
-    setShowModal(false);
+    if (selectedArticle) {
+      deleteArticle(selectedArticle.id);
+      setShowModal(false);
+    }
   };
+
+  if (loading) return <p>Loading articles...</p>;
+  if (error) return <p className="text-red-500">Error: {error}</p>;
 
   return (
     <div className="min-h-screen bg-orange-50 p-6">
       <h1 className="text-2xl font-bold text-orange-700 mb-4">
         Article and Drafts
       </h1>
+      <Link to="/articles/create">
+        <button className="px-4 py-2 rounded-lg bg-orange-600 text-white mb-3">
+          Create
+        </button>
+      </Link>
 
       {/* Tabs */}
       <div className="flex space-x-2 mb-4">
         {["published", "draft"].map((tab) => (
           <button
             key={tab}
-            className={`px-4 py-2 rounded-lg transition-colors duration-300 ${
-              activeTab === tab
-                ? "bg-orange-600 text-white"
-                : "bg-gray-200 text-gray-700"
-            }`}
+            className={`px-4 py-2 rounded-lg ${activeTab === tab ? "bg-orange-600 text-white" : "bg-gray-200 text-gray-700"}`}
             onClick={() => setActiveTab(tab)}
           >
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -83,9 +77,11 @@ const ArticleTablePage = () => {
                 <td className="p-3">{article.title}</td>
                 <td className="p-3">{article.slug}</td>
                 <td className="p-3 flex justify-center space-x-2">
-                  <button className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition">
-                    <Pencil size={16} />
-                  </button>
+                  <Link to={`/articles/update/${article.id}`}>
+                    <button className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition">
+                      <Pencil size={16} />
+                    </button>
+                  </Link>
                   <button
                     className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-700 transition"
                     onClick={() => handleDelete(article)}
@@ -99,30 +95,13 @@ const ArticleTablePage = () => {
         </table>
       </motion.div>
 
-      {/* Confirmation Modal */}
-      {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-            <p className="mb-4 text-lg">
-              Are you sure you want to delete &quot;{selectedArticle.title}&quot;?
-            </p>
-            <div className="flex justify-center space-x-4">
-              <button
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700"
-                onClick={confirmDelete}
-              >
-                Yes, Delete
-              </button>
-              <button
-                className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400"
-                onClick={() => setShowModal(false)}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Modal */}
+      <ConfirmationModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onConfirm={confirmDelete}
+        message={`Are you sure you want to delete "${selectedArticle?.title}"?`}
+      />
     </div>
   );
 };
