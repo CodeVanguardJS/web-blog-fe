@@ -1,14 +1,11 @@
-import { useState } from "react";
+import { useContext } from "react";
 import { motion } from "motion/react";
+import { AuthContext } from "../../contexts/authContext";
 
 const UpdateProfilePage = () => {
   // eslint-disable-next-line no-unused-vars
-  const [user, setUser] = useState({
-    name: "John Doe",
-    email: "4tM4I@example.com",
-    avatar: "https://placehold.co/600x400",
-  });
-  // const [avatar, setAvatar] = useState(null);
+  const { user } = useContext(AuthContext);
+  console.log("userpage", user);
 	return (
     <div className="flex h-full w-full items-center justify-center bg-orange-100">
       <motion.div
@@ -22,7 +19,7 @@ const UpdateProfilePage = () => {
         </h1>
         <div className="flex flex-col items-center gap-4">
           <motion.img
-            src={user.avatar}
+            src={user.photo_url}
             alt="Profile"
             className="w-24 h-24 rounded-full border-4 border-orange-500 shadow-lg"
             whileHover={{ scale: 1.1 }}

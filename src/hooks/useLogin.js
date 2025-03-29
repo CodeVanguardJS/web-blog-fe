@@ -1,16 +1,13 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import { loginUser } from "../services/authService";
+import { AuthContext } from "../contexts/authContext";
 
 const useLogin = () => {
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
 
   const handleInputChange = (e) => {
@@ -22,16 +19,13 @@ const useLogin = () => {
     e.preventDefault();
     setError("");
 
-    const { email, password } = formData;
-
-    if (!email || !password) {
+    if (!formData.email || !formData.password) {
       setError("All fields are required");
       return;
     }
 
     try {
-    //   const data = await loginUser(email, password);
-      await loginUser(email, password);
+      await login(formData.email, formData.password);
       Swal.fire({
         title: "Login Successful!",
         text: "Welcome back!",
