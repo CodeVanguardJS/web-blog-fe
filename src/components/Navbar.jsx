@@ -1,24 +1,31 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useContext } from "react";
+import { AuthContext } from "../contexts/authContext";
 
 const Navbar = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user } = useContext(AuthContext);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    window.location.reload();
+  };
 
   return (
     <div className="navbar bg-primary text-white shadow-lg fixed top-0 left-0 right-0 z-10">
       <div className="flex-1">
-        {/* Logo */}
         <Link
           to="/"
           className="btn btn-ghost text-2xl font-semibold hover:bg-secondary hover:text-backgrounddark"
         >
-          Whisk <span className="text-secondary hover:text-primary">Takers.</span>
+          Whisk
+          <span className="text-secondary hover:text-primary">Takers.</span>
         </Link>
       </div>
 
       {/* Desktop Menu */}
       <div className="hidden md:flex flex-none">
-        <ul className="menu menu-horizontal px-2 text-md font-bold">
+        <ul className="menu menu-horizontal px-2 text-md font-bold flex items-center gap-4">
           <li>
             <Link
               to="/"
@@ -35,72 +42,52 @@ const Navbar = () => {
               About
             </Link>
           </li>
-          <li>
-            <Link
-              to="/login"
-              className="hover:bg-secondary rounded-lg px-4 py-2 hover:text-backgrounddark"
-            >
-              Login
-            </Link>
-          </li>
-        </ul>
-      </div>
 
-      {/* Burger Menu Button */}
-      <button
-        className="md:hidden btn btn-ghost"
-        onClick={() => setIsMenuOpen(!isMenuOpen)}
-      >
-        <svg
-          className="w-6 h-6"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M4 6h16M4 12h16m-7 6h7"
-          />
-        </svg>
-      </button>
-
-      {/* Mobile Menu */}
-      {isMenuOpen && (
-        <div className="md:hidden bg-primary text-white w-full absolute top-full left-0 z-20 shadow-lg">
-          <ul className="menu menu-vertical p-4 text-md font-bold space-y-2">
-            <li>
-              <Link
-                to="/"
-                className="hover:bg-secondary rounded-lg px-4 py-2 hover:text-backgrounddark"
-                onClick={() => setIsMenuOpen(false)}
+          {user ? (
+            <li className="dropdown dropdown-end">
+              <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+                <img
+                  className="w-10 h-10 rounded-full"
+                  src={user.photo_url || "https://placehold.co/400x400"}
+                  alt="profile"
+                />
+              </div>
+              <ul
+                tabIndex={0}
+                className="dropdown-content mt-3 z-[1] p-2 shadow text-black rounded-box w-52 bg-white"
               >
-                Home
-              </Link>
+                <li>
+                  <Link to="/dashboard" className="hover:bg-secondary rounded-lg px-4 py-2">
+                    Dashboard
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/profile" className="hover:bg-secondary rounded-lg px-4 py-2">
+                    Profile
+                  </Link>
+                </li>
+                <li>
+                  <button
+                    onClick={handleLogout}
+                    className="hover:bg-secondary rounded-lg px-4 py-2 w-full text-left"
+                  >
+                    Logout
+                  </button>
+                </li>
+              </ul>
             </li>
-            <li>
-              <Link
-                to="/about"
-                className="hover:bg-secondary rounded-lg px-4 py-2 hover:text-backgrounddark"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                About
-              </Link>
-            </li>
+          ) : (
             <li>
               <Link
                 to="/login"
                 className="hover:bg-secondary rounded-lg px-4 py-2 hover:text-backgrounddark"
-                onClick={() => setIsMenuOpen(false)}
               >
                 Login
               </Link>
             </li>
-          </ul>
-        </div>
-      )}
+          )}
+        </ul>
+      </div>
     </div>
   );
 };
