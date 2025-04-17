@@ -14,6 +14,7 @@ import UpdateProfilePage from "./pages/dashboard/UpdateProfilePage";
 import LoginPage from "./pages/LoginPage";
 import ProfilePage from "./pages/dashboard/ProfilePage";
 
+
 const App = () => {
   // eslint-disable-next-line no-unused-vars
   const [darkMode, setDarkMode] = useState(() => {
@@ -38,6 +39,7 @@ const App = () => {
     "/articles/list",
     "/profile/update",
     "/profile",
+
   ];
   const isDashboardPage = listDashboard.includes(location.pathname);
   return (
@@ -58,6 +60,7 @@ const App = () => {
           <Route path="/articles/:id" element={<BlogPost />} />
           <Route path="/profile/update" element={<UpdateProfilePage />} />
           <Route path="/profile" element={<ProfilePage />} />
+
           
         </Routes>
       </div>
