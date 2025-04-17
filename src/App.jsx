@@ -13,7 +13,7 @@ import BlogPost from "./pages/BlogPost";
 import UpdateProfilePage from "./pages/dashboard/UpdateProfilePage";
 import LoginPage from "./pages/LoginPage";
 import ProfilePage from "./pages/dashboard/ProfilePage";
-import NewArticlePage from "./pages/dashboard/NewArticlePage";
+
 
 const App = () => {
   // eslint-disable-next-line no-unused-vars
@@ -39,7 +39,6 @@ const App = () => {
     "/articles/list",
     "/profile/update",
     "/profile",
-    "/articles/create",
 
   ];
   const isDashboardPage = listDashboard.includes(location.pathname);
@@ -61,7 +60,7 @@ const App = () => {
           <Route path="/articles/:id" element={<BlogPost />} />
           <Route path="/profile/update" element={<UpdateProfilePage />} />
           <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/articles/create" element={<NewArticlePage />} />
+
           
         </Routes>
       </div>
