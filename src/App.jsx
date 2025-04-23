@@ -12,6 +12,8 @@ import CategoryPage from "./pages/CategoryPage";
 import BlogPost from "./pages/BlogPost";
 import UpdateProfilePage from "./pages/dashboard/UpdateProfilePage";
 import LoginPage from "./pages/LoginPage";
+import ProfilePage from "./pages/dashboard/ProfilePage";
+
 
 const App = () => {
   // eslint-disable-next-line no-unused-vars
@@ -36,6 +38,8 @@ const App = () => {
     "/categories",
     "/articles/list",
     "/profile/update",
+    "/profile",
+
   ];
   const isDashboardPage = listDashboard.includes(location.pathname);
   return (
@@ -55,6 +59,9 @@ const App = () => {
           <Route path="/category/:category_id" element={<CategoryPage />} />
           <Route path="/articles/:id" element={<BlogPost />} />
           <Route path="/profile/update" element={<UpdateProfilePage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+
+          
         </Routes>
       </div>
     </div>

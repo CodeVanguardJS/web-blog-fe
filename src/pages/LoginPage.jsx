@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import useLogin from "../hooks/useLogin";
 
 const LoginPage = () => {
@@ -28,6 +29,8 @@ const LoginPage = () => {
             onChange={handleInputChange}
             className="w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-highlightAction bg-backgroundlight text-backgrounddark"
           />
+
+          <p>Doesn&apos;t have an account? <Link to="/register" className="text-highlightAction">Register</Link></p>
 
           <button
             type="submit"
