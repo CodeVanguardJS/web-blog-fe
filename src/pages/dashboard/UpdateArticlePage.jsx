@@ -21,33 +21,39 @@ const UpdateArticlePage = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_BACKEND_API}/categories`);
+        const res = await fetch(
+          `${import.meta.env.VITE_BACKEND_API}/categories`
+        );
         const result = await res.json();
         setCategories(result.data || []);
       } catch (error) {
-        console.error("Gagal fetch kategori:", error);
+        console.error("Failed to fetch categories:", error);
       }
     };
 
     const fetchArticle = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_BACKEND_API}/articles/${id}`);
+        const res = await fetch(
+          `${import.meta.env.VITE_BACKEND_API}/articles/${id}`
+        );
         const result = await res.json();
-        if (!res.ok) throw new Error(result.message || "Gagal ambil artikel");
+        if (!res.ok) throw new Error(result.message || "Failed to fetch article");
 
         const data = result.data;
-        console.log(data)
         setFormData({
           title: data.title || "",
           categoryId: data.category_id?.toString() || "",
           description: data.description || "",
           image: null,
-          recipes: data.recipes || [""],
+          recipes: data.recipes?.map((r) => ({ step: r.step })) || [
+            { step: "" },
+          ],
         });
+
         setImagePreview(data.photo_url || null);
       } catch (error) {
-        console.error("Fetch artikel gagal:", error);
-        alert("Artikel tidak ditemukan.");
+        console.error("Failed to fetch article:", error);
+        alert("Article not found.");
         navigate("/articles/list");
       }
     };
@@ -71,13 +77,18 @@ const UpdateArticlePage = () => {
 
   const handleRecipeChange = (index, value) => {
     const updated = [...formData.recipes];
-    updated[index] = value;
+    updated[index] = { step: value };
     setFormData((prev) => ({ ...prev, recipes: updated }));
   };
+  
 
   const addRecipeStep = () => {
-    setFormData((prev) => ({ ...prev, recipes: [...prev.recipes, ""] }));
+    setFormData((prev) => ({
+      ...prev,
+      recipes: [...prev.recipes, { step: "" }],
+    }));
   };
+  
 
   const removeRecipeStep = (index) => {
     const updated = [...formData.recipes];
@@ -86,8 +97,8 @@ const UpdateArticlePage = () => {
   };
 
   const handleSubmit = async () => {
-    if (!formData.title.trim()) return alert("Judul tidak boleh kosong!");
-    if (!formData.categoryId) return alert("Pilih kategori terlebih dahulu!");
+    if (!formData.title.trim()) return alert("Title must not be empty!");
+    if (!formData.categoryId) return alert("Choose a category!");
     if (formData.recipes.some((r) => !r.trim()))
       return alert("Resep tidak boleh kosong!");
 
@@ -104,18 +115,31 @@ const UpdateArticlePage = () => {
         form.append("photo", formData.image);
       }
 
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_API}/articles/${id}`, {
-        method: "PUT",
-        body: form,
-      });
-      const result = await res.json();
-      if (!res.ok) return alert(result.message || "Gagal update artikel");
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Token was not found.");
+        return;
+      }
 
-      alert("Artikel berhasil diperbarui!");
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_API}/articles/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: form,
+        }
+      );
+
+      const result = await res.json();
+      if (!res.ok) return alert(result.message || "Failed to update article");
+
+      alert("Article updated!");
       navigate("/articles/list");
     } catch (err) {
       console.error("Error saat update:", err);
-      alert("Terjadi kesalahan saat menyimpan.");
+      alert("Something went wrong.");
     } finally {
       setLoading(false);
     }
@@ -123,7 +147,9 @@ const UpdateArticlePage = () => {
 
   return (
     <div className="min-h-screen bg-orange-50 p-6">
-      <h1 className="text-2xl font-bold text-orange-700 mb-6">Update Article</h1>
+      <h1 className="text-2xl font-bold text-orange-700 mb-6">
+        Update Article
+      </h1>
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -144,7 +170,9 @@ const UpdateArticlePage = () => {
 
         {/* Upload Photo */}
         <div>
-          <label className="block text-sm font-semibold mb-1">Upload Photo</label>
+          <label className="block text-sm font-semibold mb-1">
+            Upload Photo
+          </label>
           <input
             type="file"
             accept="image/*"
@@ -162,7 +190,9 @@ const UpdateArticlePage = () => {
 
         {/* Select Category */}
         <div>
-          <label className="block text-sm font-semibold mb-1">Select Category</label>
+          <label className="block text-sm font-semibold mb-1">
+            Select Category
+          </label>
           <select
             name="categoryId"
             value={formData.categoryId}
@@ -180,7 +210,9 @@ const UpdateArticlePage = () => {
 
         {/* Description */}
         <div>
-          <label className="block text-sm font-semibold mb-1">Description</label>
+          <label className="block text-sm font-semibold mb-1">
+            Description
+          </label>
           <textarea
             name="description"
             value={formData.description}
@@ -192,11 +224,13 @@ const UpdateArticlePage = () => {
 
         {/* Recipe Steps */}
         <div>
-          <label className="block text-sm font-semibold mb-1">Recipe Steps</label>
+          <label className="block text-sm font-semibold mb-1">
+            Recipe Steps
+          </label>
           {formData.recipes.map((r, i) => (
             <div key={i} className="flex items-start gap-2 mb-2">
               <textarea
-                value={r}
+                value={r.step}
                 onChange={(e) => handleRecipeChange(i, e.target.value)}
                 rows={2}
                 className="w-full p-3 border rounded bg-orange-100 focus:outline-none focus:ring-2 focus:ring-orange-400"
@@ -207,13 +241,14 @@ const UpdateArticlePage = () => {
                   type="button"
                   onClick={() => removeRecipeStep(i)}
                   className="text-red-500 hover:text-red-700 font-bold text-lg"
-                  title="Hapus step"
+                  title="Delete step"
                 >
                   ❌
                 </button>
               )}
             </div>
           ))}
+
           <button
             type="button"
             onClick={addRecipeStep}
