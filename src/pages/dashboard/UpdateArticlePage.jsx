@@ -36,12 +36,13 @@ const UpdateArticlePage = () => {
         if (!res.ok) throw new Error(result.message || "Gagal ambil artikel");
 
         const data = result.data;
+        console.log(data)
         setFormData({
           title: data.title || "",
           categoryId: data.category_id?.toString() || "",
           description: data.description || "",
           image: null,
-          recipes: data.recipes?.map((r) => r.content) || [""],
+          recipes: data.recipes || [""],
         });
         setImagePreview(data.photo_url || null);
       } catch (error) {
@@ -123,7 +124,6 @@ const UpdateArticlePage = () => {
   return (
     <div className="min-h-screen bg-orange-50 p-6">
       <h1 className="text-2xl font-bold text-orange-700 mb-6">Update Article</h1>
-
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
