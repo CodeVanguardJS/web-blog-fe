@@ -13,7 +13,7 @@ export const loginUser = async (email, password) => {
     throw new Error(user.error || "Login failed");
   }
 
-  // localStorage.setItem("token", user.data.token);
+  localStorage.setItem("token", user.data.token);
   console.log(`loginUser`, user);
   return user.data;
 };

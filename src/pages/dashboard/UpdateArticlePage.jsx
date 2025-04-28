@@ -11,7 +11,7 @@ const UpdateArticlePage = () => {
     image: null,
     categoryId: "",
     description: "",
-    recipes: [""],
+    recipes: [{ step: "" }],
   });
 
   const [imagePreview, setImagePreview] = useState(null);
@@ -21,9 +21,7 @@ const UpdateArticlePage = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch(
-          `${import.meta.env.VITE_BACKEND_API}/categories`
-        );
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_API}/categories`);
         const result = await res.json();
         setCategories(result.data || []);
       } catch (error) {
@@ -33,9 +31,7 @@ const UpdateArticlePage = () => {
 
     const fetchArticle = async () => {
       try {
-        const res = await fetch(
-          `${import.meta.env.VITE_BACKEND_API}/articles/${id}`
-        );
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_API}/articles/${id}`);
         const result = await res.json();
         if (!res.ok) throw new Error(result.message || "Failed to fetch article");
 
@@ -45,9 +41,7 @@ const UpdateArticlePage = () => {
           categoryId: data.category_id?.toString() || "",
           description: data.description || "",
           image: null,
-          recipes: data.recipes?.map((r) => ({ step: r.step })) || [
-            { step: "" },
-          ],
+          recipes: data.recipes?.map((r) => ({ step: r.step })) || [{ step: "" }],
         });
 
         setImagePreview(data.photo_url || null);
@@ -72,6 +66,8 @@ const UpdateArticlePage = () => {
     if (file) {
       setFormData((prev) => ({ ...prev, image: file }));
       setImagePreview(URL.createObjectURL(file));
+    } else {
+      setImagePreview(null);
     }
   };
 
@@ -80,7 +76,6 @@ const UpdateArticlePage = () => {
     updated[index] = { step: value };
     setFormData((prev) => ({ ...prev, recipes: updated }));
   };
-  
 
   const addRecipeStep = () => {
     setFormData((prev) => ({
@@ -88,7 +83,6 @@ const UpdateArticlePage = () => {
       recipes: [...prev.recipes, { step: "" }],
     }));
   };
-  
 
   const removeRecipeStep = (index) => {
     const updated = [...formData.recipes];
@@ -99,8 +93,8 @@ const UpdateArticlePage = () => {
   const handleSubmit = async () => {
     if (!formData.title.trim()) return alert("Title must not be empty!");
     if (!formData.categoryId) return alert("Choose a category!");
-    if (formData.recipes.some((r) => !r.trim()))
-      return alert("Resep tidak boleh kosong!");
+    if (formData.recipes.some((r) => !r.step.trim()))
+      return alert("Recipe steps must not be empty!");
 
     try {
       setLoading(true);
@@ -109,7 +103,7 @@ const UpdateArticlePage = () => {
       form.append("categoryId", formData.categoryId);
       form.append("description", formData.description);
       formData.recipes.forEach((r, i) => {
-        form.append(`recipes[${i}]`, r);
+        form.append(`recipes[${i}]`, r.step);
       });
       if (formData.image) {
         form.append("photo", formData.image);
@@ -121,16 +115,13 @@ const UpdateArticlePage = () => {
         return;
       }
 
-      const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_API}/articles/${id}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: form,
-        }
-      );
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_API}/articles/${id}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: form,
+      });
 
       const result = await res.json();
       if (!res.ok) return alert(result.message || "Failed to update article");
@@ -147,9 +138,7 @@ const UpdateArticlePage = () => {
 
   return (
     <div className="min-h-screen bg-orange-50 p-6">
-      <h1 className="text-2xl font-bold text-orange-700 mb-6">
-        Update Article
-      </h1>
+      <h1 className="text-2xl font-bold text-orange-700 mb-6">Update Article</h1>
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -170,9 +159,7 @@ const UpdateArticlePage = () => {
 
         {/* Upload Photo */}
         <div>
-          <label className="block text-sm font-semibold mb-1">
-            Upload Photo
-          </label>
+          <label className="block text-sm font-semibold mb-1">Upload Photo</label>
           <input
             type="file"
             accept="image/*"
@@ -190,9 +177,7 @@ const UpdateArticlePage = () => {
 
         {/* Select Category */}
         <div>
-          <label className="block text-sm font-semibold mb-1">
-            Select Category
-          </label>
+          <label className="block text-sm font-semibold mb-1">Select Category</label>
           <select
             name="categoryId"
             value={formData.categoryId}
@@ -210,9 +195,7 @@ const UpdateArticlePage = () => {
 
         {/* Description */}
         <div>
-          <label className="block text-sm font-semibold mb-1">
-            Description
-          </label>
+          <label className="block text-sm font-semibold mb-1">Description</label>
           <textarea
             name="description"
             value={formData.description}
@@ -224,9 +207,7 @@ const UpdateArticlePage = () => {
 
         {/* Recipe Steps */}
         <div>
-          <label className="block text-sm font-semibold mb-1">
-            Recipe Steps
-          </label>
+          <label className="block text-sm font-semibold mb-1">Recipe Steps</label>
           {formData.recipes.map((r, i) => (
             <div key={i} className="flex items-start gap-2 mb-2">
               <textarea
@@ -261,6 +242,7 @@ const UpdateArticlePage = () => {
         {/* Buttons */}
         <div className="flex items-center justify-end gap-3 mt-6">
           <motion.button
+            type="button"
             whileTap={{ scale: 0.95 }}
             onClick={() => navigate("/articles/list")}
             className="bg-gray-400 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-500 transition font-semibold"
@@ -268,6 +250,7 @@ const UpdateArticlePage = () => {
             Cancel
           </motion.button>
           <motion.button
+            type="button"
             whileTap={{ scale: 0.95 }}
             disabled={loading}
             onClick={handleSubmit}
