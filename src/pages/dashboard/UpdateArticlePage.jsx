@@ -41,7 +41,7 @@ const UpdateArticlePage = () => {
           categoryId: data.category_id?.toString() || "",
           description: data.description || "",
           image: null,
-          recipes: data.recipes?.map((r) => ({ step: r.step })) || [{ step: "" }],
+          recipes: data.recipes || [],
         });
 
         setImagePreview(data.photo_url || null);
@@ -211,7 +211,7 @@ const UpdateArticlePage = () => {
           {formData.recipes.map((r, i) => (
             <div key={i} className="flex items-start gap-2 mb-2">
               <textarea
-                value={r.step}
+                value={r.content}
                 onChange={(e) => handleRecipeChange(i, e.target.value)}
                 rows={2}
                 className="w-full p-3 border rounded bg-orange-100 focus:outline-none focus:ring-2 focus:ring-orange-400"

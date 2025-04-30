@@ -1,46 +1,42 @@
+// 
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const NewArticlePage = () => {
   const navigate = useNavigate();
-  const [isAuthorized, setIsAuthorized] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [categories, setCategories] = useState([]);
+
   const [formData, setFormData] = useState({
     title: "",
     image: null,
-    categoryId: "",
+    category: "",
     description: "",
     contents: [""],
   });
+
   const [imagePreview, setImagePreview] = useState(null);
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    setIsAuthorized(!!token);
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_BACKEND_API}/categories`,
+        );
+        const result = await res.json();
+        setCategories(result.data || []);
+      } catch (error) {
+        console.error("Gagal fetch kategori:", error);
+      }
+    };
 
-    if (token) {
-      fetchCategories();
-    }
+    fetchCategories();
   }, []);
-
-  const fetchCategories = async () => {
-    try {
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_API}/categories`);
-      const result = await res.json();
-      setCategories(result.data || []);
-    } catch (error) {
-      console.error("Failed to fetch categories:", error);
-    }
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleImageUpload = (e) => {
@@ -52,131 +48,73 @@ const NewArticlePage = () => {
   };
 
   const handleContentChange = (index, value) => {
-    const updatedContents = [...formData.contents];
-    updatedContents[index] = value;
-    setFormData((prev) => ({
-      ...prev,
-      contents: updatedContents,
-    }));
+    const updated = [...formData.contents];
+    updated[index] = value;
+    setFormData((prev) => ({ ...prev, contents: updated }));
   };
 
   const addContentStep = () => {
-    setFormData((prev) => ({
-      ...prev,
-      contents: [...prev.contents, ""],
-    }));
+    setFormData((prev) => ({ ...prev, contents: [...prev.contents, ""] }));
   };
 
   const removeContentStep = (index) => {
-    if (formData.contents.length > 1) {
-      const updatedContents = formData.contents.filter((_, idx) => idx !== index);
-      setFormData((prev) => ({
-        ...prev,
-        contents: updatedContents,
-      }));
-    }
+    const updated = [...formData.contents];
+    updated.splice(index, 1);
+    setFormData((prev) => ({ ...prev, contents: updated }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (loading) return;
-  
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("Unauthorized. Please log in.");
-      return;
-    }
-  
-    // Manual validation
-    if (!formData.title.trim()) {
-      alert("Please enter a title.");
-      return;
-    }
-    if (!formData.categoryId) {
-      alert("Please select a category.");
-      return;
-    }
-    if (!formData.description.trim()) {
-      alert("Please enter a description.");
-      return;
-    }
-    if (!formData.image) {
-      alert("Please upload a photo.");
-      return;
-    }
-  
-    // Validating contents and ensuring no empty steps
-    const validContents = formData.contents.filter(content => content.trim() !== "");
-    if (validContents.length === 0) {
-      alert("Please add at least one content step.");
-      return;
-    }
-  
-    // Membuat array untuk recipes dengan properti content sebagai string utuh
-    const recipes = validContents.map(content => ({
-      content: content.trim(), // Pastikan content adalah string utuh
-    }));
-  
-    // Debug log untuk memastikan format data sebelum dikirim
-    console.log("recipes data:", recipes);
-  
-    setLoading(true);
-  
+  const handleSubmit = async () => {
     try {
       const form = new FormData();
-      form.append("title", formData.title.trim());
-      form.append("categoryId", formData.categoryId);
-      form.append("description", formData.description.trim());
-      form.append("recipes", JSON.stringify(recipes)); // Kirim array objek dalam format JSON
-      form.append("photo", formData.image);
-  
+      if (formData.title) form.append("title", formData.title);
+      if (formData.category) form.append("categoryId", formData.category);
+      if (formData.description)
+        form.append("description", formData.description);
+
+      for(const element of formData.contents) {
+        form.append(`recipes`, element);
+      }
+
+      // const filteredContents = formData.contents.filter((c) => c.trim() !== "");
+      // form.append("recipes", JSON.stringify(filteredContents));
+      // form.append("recipes", JSON.stringify(filteredContents));
+      // console.log(`filteredContents`, filteredContents);
+      // console.log(`form`, JSON.stringify(filteredContents));
+
+      if (formData.image instanceof File) {
+        form.append("photo", formData.image);
+      }
+
+      form.append("status", "published");
+
       const res = await fetch(`${import.meta.env.VITE_BACKEND_API}/articles`, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
         body: form,
+        headers: {
+          authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       });
-  
+
       const result = await res.json();
-      console.log("result", result);
-  
+
       if (!res.ok) {
-        console.error("Failed to create article:", result);
-        alert(result.message || "Failed to create article.");
+        alert(result.message || "Failed to create article");
         return;
       }
-  
-      alert("Article created successfully!");
+
+      alert("Artikel berhasil dibuat!");
       navigate("/articles/list");
-    } catch (error) {
-      console.error("Error creating article:", error);
-      alert("Something went wrong, please try again.");
-    } finally {
-      setLoading(false);
+    } catch (err) {
+      console.error("Error:", err);
+      alert("Something went wrong.");
     }
   };
-  
-  
-  
-  
-
-  if (!isAuthorized) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-orange-50">
-        <p className="text-orange-700 font-bold">
-          Please log in to create an article.
-        </p>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-orange-50 p-6">
-      <h1 className="text-2xl font-bold text-orange-700 mb-6">Create New Article</h1>
+      <h1 className="text-2xl font-bold text-orange-700 mb-6">New Article</h1>
 
-      <motion.form
-        onSubmit={handleSubmit}
+      <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
@@ -196,12 +134,10 @@ const NewArticlePage = () => {
 
         {/* Upload Photo */}
         <div>
-          <label className="block text-sm font-semibold mb-1">Upload Photo</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-          />
+          <label className="block text-sm font-semibold mb-1">
+            Upload Photo
+          </label>
+          <input type="file" accept="image/*" onChange={handleImageUpload} />
           {imagePreview && (
             <img
               src={imagePreview}
@@ -213,17 +149,19 @@ const NewArticlePage = () => {
 
         {/* Select Category */}
         <div>
-          <label className="block text-sm font-semibold mb-1">Select Category</label>
+          <label className="block text-sm font-semibold mb-1">
+            Select Category
+          </label>
           <select
-            name="categoryId"
-            value={formData.categoryId}
+            name="category"
+            value={formData.category}
             onChange={handleChange}
             className="w-full p-3 border rounded bg-orange-100 focus:outline-none focus:ring-2 focus:ring-orange-400"
           >
             <option value="">-- Choose Category --</option>
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
               </option>
             ))}
           </select>
@@ -231,34 +169,38 @@ const NewArticlePage = () => {
 
         {/* Description */}
         <div>
-          <label className="block text-sm font-semibold mb-1">Description</label>
+          <label className="block text-sm font-semibold mb-1">
+            Description
+          </label>
           <textarea
             name="description"
             value={formData.description}
             onChange={handleChange}
             rows={3}
             className="w-full p-3 border rounded bg-orange-100 focus:outline-none focus:ring-2 focus:ring-orange-400"
-          />
+          ></textarea>
         </div>
 
         {/* Content / Recipe Steps */}
         <div>
-          <label className="block text-sm font-semibold mb-1">Recipe Steps</label>
-          {formData.contents.map((content, idx) => (
-            <div key={idx} className="flex items-start gap-2 mb-2">
+          <label className="block text-sm font-semibold mb-1">
+            Content / Recipe
+          </label>
+          {formData.contents.map((content, index) => (
+            <div key={index} className="flex items-start gap-2 mb-2">
               <textarea
                 value={content}
-                onChange={(e) => handleContentChange(idx, e.target.value)}
+                onChange={(e) => handleContentChange(index, e.target.value)}
                 rows={2}
-                placeholder={`Step ${idx + 1}`}
                 className="w-full p-3 border rounded bg-orange-100 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                placeholder={`Step ${index + 1}`}
               />
               {formData.contents.length > 1 && (
                 <button
                   type="button"
-                  onClick={() => removeContentStep(idx)}
+                  onClick={() => removeContentStep(index)}
                   className="text-red-500 hover:text-red-700 font-bold text-lg"
-                  title="Remove step"
+                  title="Hapus step"
                 >
                   ❌
                 </button>
@@ -275,21 +217,16 @@ const NewArticlePage = () => {
         </div>
 
         {/* Submit Button */}
-        <div className="flex justify-end">
+        <div className="flex items-center justify-end mt-6">
           <motion.button
             whileTap={{ scale: 0.95 }}
-            type="submit"
-            disabled={loading}
-            className={`px-6 py-2 rounded-lg shadow font-semibold ${
-              loading
-                ? "bg-orange-300 cursor-not-allowed"
-                : "bg-orange-500 hover:bg-orange-600 text-white"
-            }`}
+            className="bg-orange-500 text-white px-4 py-2 rounded-lg shadow hover:bg-orange-600 transition font-semibold"
+            onClick={handleSubmit}
           >
-            {loading ? "Publishing..." : "Publish"}
+            Publish
           </motion.button>
         </div>
-      </motion.form>
+      </motion.div>
     </div>
   );
 };

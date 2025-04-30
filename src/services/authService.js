@@ -43,7 +43,7 @@ export const fetchUpdateProfile = async (token, formData) => {
 
     if (!response.ok) throw new Error("Failed to update profile");
 
-    return await response.json(); // Kembalikan data yang di-update
+    return await response.json();
   } catch (error) {
     console.error("Update error:", error);
     throw error;
