@@ -62,6 +62,27 @@ const ProfilePage = () => {
     );
   }
 
+  if (loading) {
+    return (
+      <div className="flex h-full w-full items-center justify-center bg-orange-100">
+        <div className="flex flex-col items-center">
+          <div className="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+          <p className="text-orange-600 font-semibold text-xl">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-full w-full items-center justify-center bg-orange-100">
+        <div className="text-red-600 font-semibold text-xl text-center max-w-md">
+          {error}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-full w-full items-center justify-center bg-orange-100">
       <motion.div
