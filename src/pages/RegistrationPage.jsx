@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { Link } from "react-router-dom";
 
 const RegistrationPage = () => {
   const navigate = useNavigate();
@@ -109,6 +110,7 @@ const RegistrationPage = () => {
             onChange={handleInputChange}
             className="w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-highlightAction bg-backgroundlight text-backgrounddark"
           />
+          <p>Already have an account? <Link to="/login" className="text-highlightAction">Login</Link></p>
           <button
             type="submit"
             className="bg-highlightAction text-backgrounddark font-semibold w-full py-3 rounded-md hover:bg-accent hover:text-white transition-all duration-300"
