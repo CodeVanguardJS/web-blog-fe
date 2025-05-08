@@ -1,8 +1,7 @@
-// 
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import Swal from "sweetalert2";
 
 const NewArticlePage = () => {
   const navigate = useNavigate();
@@ -21,13 +20,12 @@ const NewArticlePage = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch(
-          `${import.meta.env.VITE_BACKEND_API}/categories`,
-        );
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_API}/categories`);
         const result = await res.json();
         setCategories(result.data || []);
       } catch (error) {
         console.error("Gagal fetch kategori:", error);
+        Swal.fire("Error", "Gagal mengambil kategori.", "error");
       }
     };
 
@@ -68,24 +66,13 @@ const NewArticlePage = () => {
       const form = new FormData();
       if (formData.title) form.append("title", formData.title);
       if (formData.category) form.append("categoryId", formData.category);
-      if (formData.description)
-        form.append("description", formData.description);
-
-      for(const element of formData.contents) {
-        form.append(`recipes`, element);
-      }
-
-      // const filteredContents = formData.contents.filter((c) => c.trim() !== "");
-      // form.append("recipes", JSON.stringify(filteredContents));
-      // form.append("recipes", JSON.stringify(filteredContents));
-      // console.log(`filteredContents`, filteredContents);
-      // console.log(`form`, JSON.stringify(filteredContents));
-
-      if (formData.image instanceof File) {
-        form.append("photo", formData.image);
-      }
-
+      if (formData.description) form.append("description", formData.description);
+      if (formData.image instanceof File) form.append("photo", formData.image);
       form.append("status", "published");
+
+      for (const step of formData.contents) {
+        form.append("recipes", step);
+      }
 
       const res = await fetch(`${import.meta.env.VITE_BACKEND_API}/articles`, {
         method: "POST",
@@ -98,15 +85,30 @@ const NewArticlePage = () => {
       const result = await res.json();
 
       if (!res.ok) {
-        alert(result.message || "Failed to create article");
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: result.message || "Failed to create article",
+        });
         return;
       }
 
-      alert("Artikel berhasil dibuat!");
-      navigate("/articles/list");
-    } catch (err) {
-      console.error("Error:", err);
-      alert("Something went wrong.");
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "Article created successfully!",
+        timer: 1500,
+        showConfirmButton: false,
+      }).then(() => {
+        navigate("/articles/list");
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Unexpected Error",
+        text: "Something went wrong while creating the article.",
+      });
     }
   };
 
@@ -134,9 +136,7 @@ const NewArticlePage = () => {
 
         {/* Upload Photo */}
         <div>
-          <label className="block text-sm font-semibold mb-1">
-            Upload Photo
-          </label>
+          <label className="block text-sm font-semibold mb-1">Upload Photo</label>
           <input type="file" accept="image/*" onChange={handleImageUpload} />
           {imagePreview && (
             <img
@@ -149,9 +149,7 @@ const NewArticlePage = () => {
 
         {/* Select Category */}
         <div>
-          <label className="block text-sm font-semibold mb-1">
-            Select Category
-          </label>
+          <label className="block text-sm font-semibold mb-1">Select Category</label>
           <select
             name="category"
             value={formData.category}
@@ -169,9 +167,7 @@ const NewArticlePage = () => {
 
         {/* Description */}
         <div>
-          <label className="block text-sm font-semibold mb-1">
-            Description
-          </label>
+          <label className="block text-sm font-semibold mb-1">Description</label>
           <textarea
             name="description"
             value={formData.description}
@@ -183,9 +179,7 @@ const NewArticlePage = () => {
 
         {/* Content / Recipe Steps */}
         <div>
-          <label className="block text-sm font-semibold mb-1">
-            Content / Recipe
-          </label>
+          <label className="block text-sm font-semibold mb-1">Content / Recipe</label>
           {formData.contents.map((content, index) => (
             <div key={index} className="flex items-start gap-2 mb-2">
               <textarea
@@ -200,7 +194,7 @@ const NewArticlePage = () => {
                   type="button"
                   onClick={() => removeContentStep(index)}
                   className="text-red-500 hover:text-red-700 font-bold text-lg"
-                  title="Hapus step"
+                  title="Delete step"
                 >
                   ❌
                 </button>

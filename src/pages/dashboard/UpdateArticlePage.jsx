@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
+import Swal from "sweetalert2";
 
 const UpdateArticlePage = () => {
   const { id } = useParams();
@@ -11,9 +12,10 @@ const UpdateArticlePage = () => {
     image: null,
     categoryId: "",
     description: "",
-    recipes: [{ step: "" }],
+    recipes: [{ id: null, step: "" }],
   });
 
+  const [originalRecipeIds, setOriginalRecipeIds] = useState([]);
   const [imagePreview, setImagePreview] = useState(null);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -21,7 +23,9 @@ const UpdateArticlePage = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_BACKEND_API}/categories`);
+        const res = await fetch(
+          `${import.meta.env.VITE_BACKEND_API}/categories`
+        );
         const result = await res.json();
         setCategories(result.data || []);
       } catch (error) {
@@ -31,24 +35,36 @@ const UpdateArticlePage = () => {
 
     const fetchArticle = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_BACKEND_API}/articles/${id}`);
+        const res = await fetch(
+          `${import.meta.env.VITE_BACKEND_API}/articles/${id}`
+        );
         const result = await res.json();
-        if (!res.ok) throw new Error(result.message || "Failed to fetch article");
+        if (!res.ok)
+          throw new Error(result.message || "Failed to fetch article");
 
         const data = result.data;
+        const fetchedRecipes = (data.recipes || []).map((r) => ({
+          id: r.id,
+          step: r.content,
+        }));
+
         setFormData({
           title: data.title || "",
           categoryId: data.category_id?.toString() || "",
           description: data.description || "",
           image: null,
-          recipes: data.recipes || [],
+          recipes: fetchedRecipes.length
+            ? fetchedRecipes
+            : [{ id: null, step: "" }],
         });
 
+        setOriginalRecipeIds(fetchedRecipes.map((r) => r.id));
         setImagePreview(data.photo_url || null);
       } catch (error) {
         console.error("Failed to fetch article:", error);
-        alert("Article not found.");
-        navigate("/articles/list");
+        Swal.fire("Error", "Article not found.", "error").then(() => {
+          navigate("/articles/list");
+        });
       }
     };
 
@@ -66,21 +82,19 @@ const UpdateArticlePage = () => {
     if (file) {
       setFormData((prev) => ({ ...prev, image: file }));
       setImagePreview(URL.createObjectURL(file));
-    } else {
-      setImagePreview(null);
     }
   };
 
   const handleRecipeChange = (index, value) => {
     const updated = [...formData.recipes];
-    updated[index] = { step: value };
+    updated[index].step = value;
     setFormData((prev) => ({ ...prev, recipes: updated }));
   };
 
   const addRecipeStep = () => {
     setFormData((prev) => ({
       ...prev,
-      recipes: [...prev.recipes, { step: "" }],
+      recipes: [...prev.recipes, { id: null, step: "" }],
     }));
   };
 
@@ -91,46 +105,130 @@ const UpdateArticlePage = () => {
   };
 
   const handleSubmit = async () => {
-    if (!formData.title.trim()) return alert("Title must not be empty!");
-    if (!formData.categoryId) return alert("Choose a category!");
-    if (formData.recipes.some((r) => !r.step.trim()))
-      return alert("Recipe steps must not be empty!");
+    if (!formData.title.trim()) {
+      return Swal.fire(
+        "Validation Error",
+        "Title must not be empty!",
+        "warning"
+      );
+    }
+
+    if (!formData.categoryId) {
+      return Swal.fire("Validation Error", "Choose a category!", "warning");
+    }
+
+    if (formData.recipes.some((r) => !r.step.trim())) {
+      return Swal.fire(
+        "Validation Error",
+        "Recipe steps cannot be empty!",
+        "warning"
+      );
+    }
 
     try {
       setLoading(true);
+      const token = localStorage.getItem("token");
+      if (!token) {
+        return Swal.fire("Authentication Error", "Token not found.", "error");
+      }
+
+      // 1. Update article first
       const form = new FormData();
       form.append("title", formData.title);
       form.append("categoryId", formData.categoryId);
       form.append("description", formData.description);
-      formData.recipes.forEach((r, i) => {
-        form.append(`recipes[${i}]`, r.step);
-      });
-      if (formData.image) {
-        form.append("photo", formData.image);
+      if (formData.image) form.append("photo", formData.image);
+
+      const articleRes = await fetch(
+        `${import.meta.env.VITE_BACKEND_API}/articles/${id}`,
+        {
+          method: "PUT",
+          headers: { Authorization: `Bearer ${token}` },
+          body: form,
+        }
+      );
+
+      if (!articleRes.ok) {
+        const result = await articleRes.json();
+        return Swal.fire(
+          "Update Failed",
+          result.message || "Failed to update article",
+          "error"
+        );
       }
 
-      const token = localStorage.getItem("token");
-      if (!token) {
-        alert("Token was not found.");
-        return;
-      }
+      // 2. Handle recipes in sequence
+      const currentIds = formData.recipes.filter((r) => r.id).map((r) => r.id);
+      const deletedIds = originalRecipeIds.filter(
+        (oid) => !currentIds.includes(oid)
+      );
 
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_API}/articles/${id}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: form,
+      // Delete removed recipes
+      await Promise.all(
+        deletedIds.map((recipeId) =>
+          fetch(`${import.meta.env.VITE_BACKEND_API}/recipes/${recipeId}`, {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${token}` },
+          })
+        )
+      );
+
+      // Process recipes (update existing or create new)
+      const recipesPromises = formData.recipes.map(async (recipe) => {
+        const payload = {
+          article_id: parseInt(id),
+          content: recipe.step,
+        };
+
+        if (recipe.id) {
+          // Update existing recipe
+          return fetch(
+            `${import.meta.env.VITE_BACKEND_API}/recipes/${recipe.id}`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify(payload),
+            }
+          );
+        } else {
+          // Create new recipe
+          return fetch(
+            `${import.meta.env.VITE_BACKEND_API}/recipes/articles/${id}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                data: [{ content: recipe.step }],
+              }),
+            }
+          );
+        }
       });
 
-      const result = await res.json();
-      if (!res.ok) return alert(result.message || "Failed to update article");
+      // Wait for all recipe operations to complete
+      const recipesResults = await Promise.all(recipesPromises);
 
-      alert("Article updated!");
-      navigate("/articles/list");
+      // Check if any recipe operation failed
+      const failedRecipe = recipesResults.find((res) => !res.ok);
+      if (failedRecipe) {
+        const errorData = await failedRecipe.json();
+        throw new Error(errorData.message || "Failed to process some recipes");
+      }
+
+      Swal.fire("Success", "Article updated successfully!", "success").then(
+        () => {
+          navigate("/articles/list");
+        }
+      );
     } catch (err) {
-      console.error("Error saat update:", err);
-      alert("Something went wrong.");
+      console.error("Update failed:", err);
+      Swal.fire("Error", err.message || "Something went wrong.", "error");
     } finally {
       setLoading(false);
     }
@@ -138,7 +236,9 @@ const UpdateArticlePage = () => {
 
   return (
     <div className="min-h-screen bg-orange-50 p-6">
-      <h1 className="text-2xl font-bold text-orange-700 mb-6">Update Article</h1>
+      <h1 className="text-2xl font-bold text-orange-700 mb-6">
+        Update Article
+      </h1>
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -159,7 +259,9 @@ const UpdateArticlePage = () => {
 
         {/* Upload Photo */}
         <div>
-          <label className="block text-sm font-semibold mb-1">Upload Photo</label>
+          <label className="block text-sm font-semibold mb-1">
+            Upload Photo
+          </label>
           <input
             type="file"
             accept="image/*"
@@ -177,7 +279,9 @@ const UpdateArticlePage = () => {
 
         {/* Select Category */}
         <div>
-          <label className="block text-sm font-semibold mb-1">Select Category</label>
+          <label className="block text-sm font-semibold mb-1">
+            Select Category
+          </label>
           <select
             name="categoryId"
             value={formData.categoryId}
@@ -195,7 +299,9 @@ const UpdateArticlePage = () => {
 
         {/* Description */}
         <div>
-          <label className="block text-sm font-semibold mb-1">Description</label>
+          <label className="block text-sm font-semibold mb-1">
+            Description
+          </label>
           <textarea
             name="description"
             value={formData.description}
@@ -207,11 +313,13 @@ const UpdateArticlePage = () => {
 
         {/* Recipe Steps */}
         <div>
-          <label className="block text-sm font-semibold mb-1">Recipe Steps</label>
+          <label className="block text-sm font-semibold mb-1">
+            Recipe Steps
+          </label>
           {formData.recipes.map((r, i) => (
             <div key={i} className="flex items-start gap-2 mb-2">
               <textarea
-                value={r.content}
+                value={r.step}
                 onChange={(e) => handleRecipeChange(i, e.target.value)}
                 rows={2}
                 className="w-full p-3 border rounded bg-orange-100 focus:outline-none focus:ring-2 focus:ring-orange-400"
@@ -229,7 +337,6 @@ const UpdateArticlePage = () => {
               )}
             </div>
           ))}
-
           <button
             type="button"
             onClick={addRecipeStep}
@@ -242,7 +349,6 @@ const UpdateArticlePage = () => {
         {/* Buttons */}
         <div className="flex items-center justify-end gap-3 mt-6">
           <motion.button
-            type="button"
             whileTap={{ scale: 0.95 }}
             onClick={() => navigate("/articles/list")}
             className="bg-gray-400 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-500 transition font-semibold"
@@ -250,7 +356,6 @@ const UpdateArticlePage = () => {
             Cancel
           </motion.button>
           <motion.button
-            type="button"
             whileTap={{ scale: 0.95 }}
             disabled={loading}
             onClick={handleSubmit}
