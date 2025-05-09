@@ -6,10 +6,21 @@ import { useArticles } from "../../hooks/useArticle";
 import ConfirmationModal from "../../components/ConfirmationModal";
 
 const ArticleTablePage = () => {
-  const { articles, loading, error, deleteArticle } = useArticles();
+  // const { articles, loading, error, deleteArticle } = useArticles();
+  const {
+    articles,
+    loading,
+    error,
+    currentPage,
+    totalPage,
+    setCurrentPage,
+    deleteArticle,
+    activeTab,
+    setActiveTab,
+  } = useArticles();
+
   const [showModal, setShowModal] = useState(false);
   const [selectedArticle, setSelectedArticle] = useState(null);
-  const [activeTab, setActiveTab] = useState("published");
 
   const handleDelete = (article) => {
     setSelectedArticle(article);
@@ -42,7 +53,7 @@ const ArticleTablePage = () => {
         {["published", "draft"].map((tab) => (
           <button
             key={tab}
-            className={`px-4 py-2 rounded-lg ${activeTab === tab ? "bg-orange-600 text-white" : "bg-gray-200 text-gray-700"}`}
+            className={`px-4 py-2 rounded-lg ${activeTab.toLowerCase() === tab ? "bg-orange-600 text-white" : "bg-gray-200 text-gray-700"}`}
             onClick={() => setActiveTab(tab)}
           >
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -94,6 +105,32 @@ const ArticleTablePage = () => {
           </tbody>
         </table>
       </motion.div>
+
+      <div className="flex justify-center mt-4 space-x-2">
+        <button
+          className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50"
+          onClick={() => setCurrentPage(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+        {Array.from({ length: totalPage }, (_, i) => (
+          <button
+            key={i + 1}
+            className={`px-3 py-1 rounded ${currentPage === i + 1 ? "bg-orange-600 text-white" : "bg-gray-200"}`}
+            onClick={() => setCurrentPage(i + 1)}
+          >
+            {i + 1}
+          </button>
+        ))}
+        <button
+          className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50"
+          onClick={() => setCurrentPage(currentPage + 1)}
+          disabled={currentPage === totalPage}
+        >
+          Next
+        </button>
+      </div>
 
       {/* Modal */}
       <ConfirmationModal
