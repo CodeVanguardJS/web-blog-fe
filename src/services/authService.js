@@ -13,7 +13,7 @@ export const loginUser = async (email, password) => {
     throw new Error(user.error || "Login failed");
   }
 
-  // localStorage.setItem("token", user.data.token);
+  localStorage.setItem("token", user.data.token);
   console.log(`loginUser`, user);
   return user.data;
 };
@@ -43,7 +43,7 @@ export const fetchUpdateProfile = async (token, formData) => {
 
     if (!response.ok) throw new Error("Failed to update profile");
 
-    return await response.json(); // Kembalikan data yang di-update
+    return await response.json();
   } catch (error) {
     console.error("Update error:", error);
     throw error;
