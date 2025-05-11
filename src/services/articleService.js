@@ -9,8 +9,12 @@ export const getArticles = async (limit, page, type) => {
 };
 
 export const deleteArticleById = async (id) => {
+  const token = localStorage.getItem("token");
   const response = await fetch(`${API_URL}/articles/${id}`, {
     method: "DELETE",
+    headers: {
+      "authorization": `Bearer ${token}`,
+    },
   });
   if (!response.ok) throw new Error("Failed to delete article");
   return response.json();
