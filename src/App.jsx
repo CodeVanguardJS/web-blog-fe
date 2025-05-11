@@ -1,4 +1,5 @@
-import { Routes, Route, useLocation } from "react-router-dom";
+/* eslint-disable no-unused-vars */
+import { Routes, Route, useLocation, matchPath } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import HomePage from "./pages/HomePage";
 import RegistrationPage from "./pages/RegistrationPage";
@@ -13,12 +14,12 @@ import BlogPost from "./pages/BlogPost";
 import UpdateProfilePage from "./pages/dashboard/UpdateProfilePage";
 import LoginPage from "./pages/LoginPage";
 import ProfilePage from "./pages/dashboard/ProfilePage";
-
+import NewArticlePage from "./pages/dashboard/NewArticlePage";
+import UpdateArticlePage from "./pages/dashboard/UpdateArticlePage";
 
 const App = () => {
-  // eslint-disable-next-line no-unused-vars
   const [darkMode, setDarkMode] = useState(() => {
-    return localStorage.getItem("theme") === "dark"; // Default light mode
+    return localStorage.getItem("theme") === "dark";
   });
 
   useEffect(() => {
@@ -33,15 +34,21 @@ const App = () => {
 
   const location = useLocation();
 
+  
   const listDashboard = [
     "/dashboard",
     "/categories",
     "/articles/list",
     "/profile/update",
     "/profile",
-
+    "/articles/create",
+    "/articles/update/:id",
   ];
-  const isDashboardPage = listDashboard.includes(location.pathname);
+
+  const isDashboardPage = listDashboard.some((path) =>
+    matchPath({ path, end: false }, location.pathname)
+  );
+
   return (
     <div className="flex min-h-screen bg-white text-black dark:bg-gray-900 dark:text-white">
       {!isDashboardPage && <Navbar />}
@@ -60,8 +67,8 @@ const App = () => {
           <Route path="/articles/:id" element={<BlogPost />} />
           <Route path="/profile/update" element={<UpdateProfilePage />} />
           <Route path="/profile" element={<ProfilePage />} />
-
-          
+          <Route path="/articles/create" element={<NewArticlePage />} />
+          <Route path="/articles/update/:id" element={<UpdateArticlePage />} />
         </Routes>
       </div>
     </div>
