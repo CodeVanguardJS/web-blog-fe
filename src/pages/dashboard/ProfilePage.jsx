@@ -116,7 +116,7 @@ const ProfilePage = () => {
         </div>
         <div className="mt-6">
           <motion.a
-            href="/update-profile"
+            href="/profile/update"
             className="w-full inline-block text-center bg-orange-500 text-white px-4 py-3 rounded-lg shadow hover:bg-orange-600 transition font-semibold"
             whileTap={{ scale: 0.95 }}
           >
