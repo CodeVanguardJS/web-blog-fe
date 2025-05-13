@@ -4,11 +4,22 @@ import { useEffect, useState } from "react";
 import AOS from "aos";
 import { FaBookmark, FaRegBookmark } from "react-icons/fa";
 import Footer from "../components/Footer";
+import { Link, useNavigate } from "react-router-dom";
 const HomePage = () => {
+  const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingArticle, setLoadingArticle] = useState(true);
+
+  const handleCategoryClick = (categoryId) => {
+    // console.log(categoryId);
+    navigate(`/category/${categoryId}`);
+  };
+
+  const handleBookmarkClick = (articleId) => {
+    console.log("bookmark clicked", articleId);
+  };
   useEffect(() => {
     AOS.init({
       duration: 800,
@@ -47,27 +58,6 @@ const HomePage = () => {
     fetchCategories();
   }, []);
 
-  // const articles = [
-  //   {
-  //     title: "Chicken Soup",
-  //     description:
-  //       "Lorem ipsum dolor sit amet consectetur. Adipiscing quis fusce a vel congue scelerisque.Lorem ipsum dolor sit amet consectetur. Adipiscing quis fusce a vel congue scelerisque.Lorem ipsum dolor sit amet consectetur. Adipiscing quis fusce a vel congue scelerisque.",
-  //     likes: 12,
-  //     image:
-  //       "https://downshiftology.com/wp-content/uploads/2023/10/Chicken-Soup-main-2-500x375.jpg",
-  //     bookmarks: true,
-  //   },
-  //   {
-  //     title: "Chicken Katsu",
-  //     description:
-  //       "Dui eu fames imperdiet donec feugiat nam. Ac massa urna viverra auctor mi pellentesque.",
-  //     likes: 15,
-  //     image:
-  //       "https://downshiftology.com/wp-content/uploads/2023/10/Chicken-Soup-main-2-500x375.jpg",
-  //     bookmarks: false,
-  //   },
-  // ];
-
   return (
     <div className="overflow-hidden">
       <motion.div
@@ -103,41 +93,34 @@ const HomePage = () => {
             Discover delicious recipes, cooking tips, and food adventures that
             will tantalize your taste buds!
           </motion.p>
-          <motion.button
-            className="bg-white text-orange-500 px-6 py-3 rounded-lg font-semibold text-lg shadow-lg hover:bg-orange-600 hover:text-white transition"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            Explore Recipes
-          </motion.button>
+          <Link to="/login">
+            <motion.button
+              className="bg-white text-orange-500 px-6 py-3 rounded-lg font-semibold text-lg shadow-lg hover:bg-orange-600 hover:text-white transition"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              Explore Recipes
+            </motion.button>
+          </Link>
         </div>
       </motion.div>
 
       {/* Category Section */}
       <div className="py-12 bg-orange-50 text-center" data-aos="fade-in">
         <h2 className="text-3xl font-semibold mb-6">Browse by Category</h2>
-        {/* <div className="flex justify-center flex-wrap gap-6">
-          {categories2.map((category, index) => (
-            <div
-              key={index}
-              className="flex flex-col items-center"
-              data-aos="fade-in"
-              data-aos-delay={index * 50}
-            >
-              <div className="w-20 h-20 bg-gray-300 rounded-full mb-2"></div>
-              <p className="text-lg font-medium">{category}</p>
-            </div>
-          ))}
-        </div> */}
+
         {loading ? (
           <p>Loading categories...</p>
         ) : (
           <div className="flex justify-center flex-wrap gap-6">
             {categories.map((category, index) => (
               <div
-                key={index}
+                role="button"
+                tabIndex={0}
+                key={category.id}
+                onClick={() => handleCategoryClick(category.id)}
                 className="flex flex-col items-center"
                 data-aos="fade-in"
                 data-aos-delay={index * 50}
@@ -162,9 +145,11 @@ const HomePage = () => {
             className="border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
           />
           <span className="text-lg">or</span>
-          <button className="bg-orange-500 text-white px-6 py-2 rounded-lg font-semibold shadow-lg hover:bg-orange-600 transition">
-            View All Recipes
-          </button>
+          <Link to="/login">
+            <button className="bg-orange-500 text-white px-6 py-2 rounded-lg font-semibold shadow-lg hover:bg-orange-600 transition">
+              View All Recipes
+            </button>
+          </Link>
         </div>
       </div>
 
@@ -176,40 +161,6 @@ const HomePage = () => {
         <div className="max-w-5xl mx-auto">
           <h1 className="text-3xl font-semibold mb-6">Top Western Food</h1>
           <div className="">
-            {/* {articles.map((article, index) => (
-              <motion.div
-                key={index}
-                className="bg-white p-6 rounded-lg shadow-md mb-6 flex gap-4"
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 50 }}
-                transition={{ duration: 0.8, delay: index * 0.2 }}
-              >
-                <div className="min-w-64">
-                  <img
-                    src={article.image}
-                    alt={article.title}
-                    className="w-64 h-64 object-cover rounded-lg"
-                  />
-                </div>
-                <div className="text-left flex flex-col justify-between">
-                  <div>
-                    <h3 className="text-2xl font-bold flex-shrink-1 mb-3">
-                      {article.title}
-                    </h3>
-                    <p className="text-gray-600 mb-2">{article.description}</p>
-                  </div>
-                  <div className="flex justify-between">
-                    <p className="text-sm text-gray-500">
-                      {article.likes} Likes
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {article.bookmarks ? <FaBookmark /> : <FaRegBookmark />}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            ))} */}
             {loadingArticle ? (
               <p>Loading article...</p>
             ) : (
@@ -225,6 +176,7 @@ const HomePage = () => {
                   >
                     <div className="min-w-64">
                       <img
+                        loading="lazy"
                         src={article.image}
                         alt={article.title}
                         className="w-64 h-64 object-cover rounded-lg"
@@ -243,7 +195,10 @@ const HomePage = () => {
                         <p className="text-sm text-gray-500">
                           {article.likes} Likes
                         </p>
-                        <p className="text-sm text-gray-500">
+                        <p
+                          onClick={() => handleBookmarkClick(article.id)}
+                          className="text-sm text-gray-500"
+                        >
                           {article.bookmarks ? (
                             <FaBookmark />
                           ) : (
@@ -267,9 +222,6 @@ const HomePage = () => {
               >
                 {category.name}
               </button>
-              // <div key={index} data-aos="fade-in" data-aos-delay={index * 100}>
-              //   <h2 className="text-3xl font-semibold mb-6">{category}</h2>
-              // </div>
             ))}
           </div>
         </div>
