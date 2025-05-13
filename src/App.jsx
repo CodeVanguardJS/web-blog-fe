@@ -60,15 +60,17 @@ const App = () => {
           <Route path="/register" element={<RegistrationPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/about" element={<AboutPage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/articles/list" element={<ArticleTablePage />} />
-          <Route path="/categories" element={<CategoriesAdminPage />} />
           <Route path="/category/:category_id" element={<CategoryPage />} />
           <Route path="/articles/:id" element={<BlogPost />} />
+          {/* dashboard */}
+          <Route path="/articles/list" element={<ArticleTablePage />} />
+          <Route path="/categories" element={<CategoriesAdminPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/profile/update" element={<UpdateProfilePage />} />
           <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/articles/create" element={<NewArticlePage />} />
           <Route path="/articles/update/:id" element={<UpdateArticlePage />} />
+          <Route path="/articles/create" element={<NewArticlePage />} />
+
         </Routes>
       </div>
     </div>
