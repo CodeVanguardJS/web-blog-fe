@@ -5,12 +5,23 @@ import AOS from "aos";
 import { FaBookmark, FaRegBookmark } from "react-icons/fa";
 import Footer from "../components/Footer";
 import { Link, useNavigate } from "react-router-dom";
+
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination } from "swiper/modules";
+
+// Import Swiper styles
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import { CircleChevronLeft, CircleChevronRight } from "lucide-react";
+
 const HomePage = () => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingArticle, setLoadingArticle] = useState(true);
+  const [activeCategory, setActiveCategory] = useState(101);
 
   const handleCategoryClick = (categoryId) => {
     // console.log(categoryId);
@@ -20,17 +31,34 @@ const HomePage = () => {
   const handleBookmarkClick = (articleId) => {
     console.log("bookmark clicked", articleId);
   };
+
+  const fetchArticles = async (categoryId) => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_API}/articles/category/${categoryId}`
+      ); // Ganti dengan endpoint API yang sesuai
+      const articles = await response.json();
+      setArticles(articles.data);
+    } catch (error) {
+      console.error("Error fetching articles:", error);
+    } finally {
+      setLoadingArticle(false);
+    }
+  };
+
+  const handleTopArticleList = async (categoryId) => {
+    setActiveCategory(categoryId);
+    console.log(activeCategory);
+  };
+
   useEffect(() => {
-    AOS.init({
-      duration: 800,
-      easing: "ease-out",
-      once: false,
-    });
+    AOS.init({ duration: 800, easing: "ease-out", once: false });
+
     const fetchCategories = async () => {
       try {
         const response = await fetch(
           `${import.meta.env.VITE_BACKEND_API}/categories`
-        ); // Ganti dengan endpoint API yang sesuai
+        );
         const categories = await response.json();
         setCategories(categories.data);
       } catch (error) {
@@ -40,22 +68,11 @@ const HomePage = () => {
       }
     };
 
-    const fetchArticles = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_API}/articles?limit=2`
-        ); // Ganti dengan endpoint API yang sesuai
-        const articles = await response.json();
-        setArticles(articles.data.data);
-      } catch (error) {
-        console.error("Error fetching articles:", error);
-      } finally {
-        setLoadingArticle(false);
-      }
-    };
-
-    fetchArticles();
     fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    fetchArticles(activeCategory);
   }, []);
 
   return (
@@ -73,7 +90,7 @@ const HomePage = () => {
         transition={{ duration: 0.8 }}
       >
         <div className="absolute inset-0 bg-black opacity-50"></div>
-        <div className="relative z-9">
+        <div className="relative z-10">
           <motion.h1
             className="text-5xl font-bold mb-4"
             initial={{ opacity: 0, y: -50 }}
@@ -212,7 +229,45 @@ const HomePage = () => {
               </div>
             )}
           </div>
-          <div className="flex flex-wrap gap-6">
+
+          <Swiper
+            modules={[Navigation, Pagination]}
+            spaceBetween={30}
+            slidesPerView={7}
+            navigation={{
+              nextEl: ".custom-next",
+              prevEl: ".custom-prev",
+            }}
+            onSwiper={(swiper) => console.log(swiper)}
+            onSlideChange={() => console.log("slide change")}
+            // navigation
+            // pagination={{ clickable: true }}
+
+            // autoplay={{ delay: 3000 }}
+            // className="p-8"
+          >
+            {categories.map((category, index) => (
+              <SwiperSlide key={index}>
+                <motion.button
+                  onClick={() => handleTopArticleList(category.id)}
+                  className="bg-white text-orange-500 px-6 py-3 rounded-lg font-semibold text-lg shadow-lg hover:bg-orange-600 hover:text-white transition"
+                  data-aos="fade-in"
+                  data-aos-delay={index * 100}
+                >
+                  {category.name}
+                </motion.button>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+          <div className="swiper-controls mt-4 text-center">
+            <button className="custom-prev px-4 py-4 bg-gray-300 rounded rounded-full mr-2">
+              <CircleChevronLeft />
+            </button>
+            <button className="custom-next px-4 py-4 bg-blue-500 text-white rounded-full">
+              <CircleChevronRight />
+            </button>
+          </div>
+          {/* <div className="flex flex-wrap gap-6">
             {categories.map((category, index) => (
               <button
                 className="bg-white text-orange-500 px-6 py-3 rounded-lg font-semibold text-lg shadow-lg hover:bg-orange-600 hover:text-white transition"
@@ -223,7 +278,7 @@ const HomePage = () => {
                 {category.name}
               </button>
             ))}
-          </div>
+          </div> */}
         </div>
       </div>
 
