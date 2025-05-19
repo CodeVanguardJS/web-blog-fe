@@ -21,7 +21,7 @@ const ProfilePage = () => {
         if (!res.ok) throw new Error("Failed to fetch profile");
         
         const result = await res.json();
-        console.log("Profile Result:", result); // Debugging line
+        console.log("Profile Result:", result); 
 
         if (result.status) {
           setUser(result.data);
