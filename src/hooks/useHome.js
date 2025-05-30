@@ -17,7 +17,6 @@ export const useHome = () => {
   };
 
   const handleCategoryClick = (categoryId) => {
-    // console.log(categoryId);
     navigate(`/category/${categoryId}`);
   };
 

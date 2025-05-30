@@ -7,7 +7,6 @@ import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 
-// Import Swiper styles
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -16,7 +15,17 @@ import { CircleChevronLeft, CircleChevronRight } from "lucide-react";
 import { useHome } from "../hooks/useHome.js";
 
 const HomePage = () => {
-  const {scrollToTopArticle, sectionTopArticle, categories, articles, loading, loadingArticle, handleBookmarkClick, handleCategoryClick, handleTopArticleList } = useHome()
+  const {
+    scrollToTopArticle,
+    sectionTopArticle,
+    categories,
+    articles,
+    loading,
+    loadingArticle,
+    handleBookmarkClick,
+    handleCategoryClick,
+    handleTopArticleList,
+  } = useHome();
 
   return (
     <div className="overflow-hidden">
@@ -53,16 +62,16 @@ const HomePage = () => {
             Discover delicious recipes, cooking tips, and food adventures that
             will tantalize your taste buds!
           </motion.p>
-            <motion.button
-              onClick={() => scrollToTopArticle(sectionTopArticle)}
-              className="bg-white text-orange-500 px-6 py-3 rounded-lg font-semibold text-lg shadow-lg hover:bg-orange-600 hover:text-white transition"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              Explore Recipes
-            </motion.button>
+          <motion.button
+            onClick={() => scrollToTopArticle(sectionTopArticle)}
+            className="bg-white text-orange-500 px-6 py-3 rounded-lg font-semibold text-lg shadow-lg hover:bg-orange-600 hover:text-white transition"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            exit={{ scale: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            Explore Recipes
+          </motion.button>
         </div>
       </motion.div>
 
@@ -103,17 +112,20 @@ const HomePage = () => {
             placeholder="Search for a recipe..."
             className="border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
           />
-          <span className="text-lg">or</span>
-          <Link to="/login">
+          <Link to="/category/101">
             <button className="bg-orange-500 text-white px-6 py-2 rounded-lg font-semibold shadow-lg hover:bg-orange-600 transition">
-              View All Recipes
+              Search
             </button>
           </Link>
         </div>
       </div>
 
       {/* Articles Section */}
-      <div ref={sectionTopArticle} className="py-12 bg-orange-50" data-aos="fade-in">
+      <div
+        ref={sectionTopArticle}
+        className="py-12 bg-orange-50"
+        data-aos="fade-in"
+      >
         <h2 className="text-3xl font-semibold mb-6 text-center">
           More Recipes
         </h2>
@@ -152,8 +164,13 @@ const HomePage = () => {
                       </div>
                       <div className="flex justify-between">
                         <p className="text-sm text-gray-500">
-                          {article.likes} Likes
+                          {article.total_like} Likes
                         </p>
+                        <Link to={`/articles/${article.id}`}>
+                          <button className="bg-orange-500 text-white px-6 py-2 rounded-lg font-semibold shadow-lg hover:bg-orange-600 transition">
+                            Read Article
+                          </button>
+                        </Link>
                         <p
                           onClick={() => handleBookmarkClick(article.id)}
                           className="text-sm text-gray-500"
@@ -180,13 +197,6 @@ const HomePage = () => {
               nextEl: ".custom-next",
               prevEl: ".custom-prev",
             }}
-            // onSwiper={(swiper) => console.log(swiper)}
-            // onSlideChange={() => console.log("slide change")}
-            // navigation
-            // pagination={{ clickable: true }}
-
-            // autoplay={{ delay: 3000 }}
-            // className="p-8"
           >
             {categories.map((category, index) => (
               <SwiperSlide key={index}>
@@ -209,18 +219,6 @@ const HomePage = () => {
               <CircleChevronRight />
             </button>
           </div>
-          {/* <div className="flex flex-wrap gap-6">
-            {categories.map((category, index) => (
-              <button
-                className="bg-white text-orange-500 px-6 py-3 rounded-lg font-semibold text-lg shadow-lg hover:bg-orange-600 hover:text-white transition"
-                data-aos="fade-in"
-                data-aos-delay={index * 100}
-                key={index}
-              >
-                {category.name}
-              </button>
-            ))}
-          </div> */}
         </div>
       </div>
 
