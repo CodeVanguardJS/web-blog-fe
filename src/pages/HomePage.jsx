@@ -1,10 +1,8 @@
 import { motion } from "framer-motion";
 import "aos/dist/aos.css";
-import { useEffect, useRef, useState } from "react";
-import AOS from "aos";
 import { FaBookmark, FaRegBookmark } from "react-icons/fa";
 import Footer from "../components/Footer";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
@@ -15,70 +13,10 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { CircleChevronLeft, CircleChevronRight } from "lucide-react";
 
+import { useHome } from "../hooks/useHome.js";
+
 const HomePage = () => {
-  const sectionTopArticle = useRef(null);
-  const navigate = useNavigate();
-  const [categories, setCategories] = useState([]);
-  const [articles, setArticles] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [loadingArticle, setLoadingArticle] = useState(true);
-  const [activeCategory, setActiveCategory] = useState(101);
-
-  const scrollToTopArticle = (ref) => {
-    ref.current.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const handleCategoryClick = (categoryId) => {
-    // console.log(categoryId);
-    navigate(`/category/${categoryId}`);
-  };
-
-  const handleBookmarkClick = (articleId) => {
-    console.log("bookmark clicked", articleId);
-  };
-
-  const fetchArticles = async (categoryId) => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_API}/articles/category/${categoryId}`
-      ); // Ganti dengan endpoint API yang sesuai
-      const articles = await response.json();
-      setArticles(articles.data);
-    } catch (error) {
-      console.error("Error fetching articles:", error);
-    } finally {
-      setLoadingArticle(false);
-    }
-  };
-
-  const handleTopArticleList = async (categoryId) => {
-    setActiveCategory(categoryId);
-    console.log(activeCategory);
-  };
-
-  useEffect(() => {
-    AOS.init({ duration: 800, easing: "ease-out", once: false });
-
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_API}/categories`
-        );
-        const categories = await response.json();
-        setCategories(categories.data);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCategories();
-  }, []);
-
-  useEffect(() => {
-    fetchArticles(activeCategory);
-  }, []);
+  const {scrollToTopArticle, sectionTopArticle, categories, articles, loading, loadingArticle, handleBookmarkClick, handleCategoryClick, handleTopArticleList } = useHome()
 
   return (
     <div className="overflow-hidden">
