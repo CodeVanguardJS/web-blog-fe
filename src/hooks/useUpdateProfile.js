@@ -61,7 +61,7 @@ export const useUpdateProfile = () => {
       );
 
       alert("Profile updated successfully");
-      navigate("/dashboard");
+      navigate("/dashboard"); //sasasasa
     } catch (error) {
       alert("Failed to update profile");
     } finally {

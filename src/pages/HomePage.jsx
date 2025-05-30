@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import "aos/dist/aos.css";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AOS from "aos";
 import { FaBookmark, FaRegBookmark } from "react-icons/fa";
 import Footer from "../components/Footer";
@@ -16,12 +16,17 @@ import "swiper/css/pagination";
 import { CircleChevronLeft, CircleChevronRight } from "lucide-react";
 
 const HomePage = () => {
+  const sectionTopArticle = useRef(null);
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingArticle, setLoadingArticle] = useState(true);
   const [activeCategory, setActiveCategory] = useState(101);
+
+  const scrollToTopArticle = (ref) => {
+    ref.current.scrollIntoView({ behavior: "smooth" });
+  };
 
   const handleCategoryClick = (categoryId) => {
     // console.log(categoryId);
@@ -110,8 +115,8 @@ const HomePage = () => {
             Discover delicious recipes, cooking tips, and food adventures that
             will tantalize your taste buds!
           </motion.p>
-          <Link to="/login">
             <motion.button
+              onClick={() => scrollToTopArticle(sectionTopArticle)}
               className="bg-white text-orange-500 px-6 py-3 rounded-lg font-semibold text-lg shadow-lg hover:bg-orange-600 hover:text-white transition"
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
@@ -120,7 +125,6 @@ const HomePage = () => {
             >
               Explore Recipes
             </motion.button>
-          </Link>
         </div>
       </motion.div>
 
@@ -171,7 +175,7 @@ const HomePage = () => {
       </div>
 
       {/* Articles Section */}
-      <div className="py-12 bg-orange-50" data-aos="fade-in">
+      <div ref={sectionTopArticle} className="py-12 bg-orange-50" data-aos="fade-in">
         <h2 className="text-3xl font-semibold mb-6 text-center">
           More Recipes
         </h2>
@@ -238,8 +242,8 @@ const HomePage = () => {
               nextEl: ".custom-next",
               prevEl: ".custom-prev",
             }}
-            onSwiper={(swiper) => console.log(swiper)}
-            onSlideChange={() => console.log("slide change")}
+            // onSwiper={(swiper) => console.log(swiper)}
+            // onSlideChange={() => console.log("slide change")}
             // navigation
             // pagination={{ clickable: true }}
 
@@ -250,7 +254,7 @@ const HomePage = () => {
               <SwiperSlide key={index}>
                 <motion.button
                   onClick={() => handleTopArticleList(category.id)}
-                  className="bg-white text-orange-500 px-6 py-3 rounded-lg font-semibold text-lg shadow-lg hover:bg-orange-600 hover:text-white transition"
+                  className="w-32 y-32 bg-white text-orange-500 px-6 py-3 rounded-lg font-semibold text-lg shadow-lg hover:bg-orange-600 hover:text-white transition"
                   data-aos="fade-in"
                   data-aos-delay={index * 100}
                 >
