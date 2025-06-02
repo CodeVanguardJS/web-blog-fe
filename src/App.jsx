@@ -16,6 +16,7 @@ import LoginPage from "./pages/LoginPage";
 import ProfilePage from "./pages/dashboard/ProfilePage";
 import NewArticlePage from "./pages/dashboard/NewArticlePage";
 import UpdateArticlePage from "./pages/dashboard/UpdateArticlePage";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
   const [darkMode, setDarkMode] = useState(() => {
@@ -56,21 +57,24 @@ const App = () => {
       {/* <button className="absolute top-4 right-4" onClick={() => setDarkMode(!darkMode)} type="button">toogle</button> */}
       <div className={`w-full ${isDashboardPage ? "pt-0 " : "pt-[60px]"}`}>
         <Routes>
+          {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
+          <Route path="/about" element={<AboutPage />} />
           <Route path="/register" element={<RegistrationPage />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/about" element={<AboutPage />} />
           <Route path="/category/:category_id" element={<CategoryPage />} />
           <Route path="/articles/:id" element={<BlogPost />} />
-          {/* dashboard */}
+
+          {/* Protected Routes */}
+          <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/articles/list" element={<ArticleTablePage />} />
           <Route path="/categories" element={<CategoriesAdminPage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/profile/update" element={<UpdateProfilePage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/articles/update/:id" element={<UpdateArticlePage />} />
-          <Route path="/articles/create" element={<NewArticlePage />} />
 
+          </Route>
         </Routes>
       </div>
     </div>
