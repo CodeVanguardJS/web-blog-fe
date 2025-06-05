@@ -4,6 +4,7 @@ import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/authContext";
 import { fetchUpdateProfile } from "../services/authService";
+import Swal from "sweetalert2";
 
 export const useUpdateProfile = () => {
   const { user, token, setUser } = useContext(AuthContext);
@@ -59,11 +60,18 @@ export const useUpdateProfile = () => {
           photo_url: updatedUser.photo_url || user.photo_url,
         })
       );
-
-      alert("Profile updated successfully");
-      navigate("/dashboard"); //sasasasa
+      Swal.fire({
+        title: "Good job!",
+        text: "Profile updated successfully",
+        icon: "success",
+      });
+      navigate("/profile");
     } catch (error) {
-      alert("Failed to update profile");
+      Swal.fire({
+        title: "Error",
+        text: "Failed to update profile",
+        icon: "error",
+      });
     } finally {
       setLoading(false);
     }
