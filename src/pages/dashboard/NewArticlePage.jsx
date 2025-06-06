@@ -61,14 +61,14 @@ const NewArticlePage = () => {
     setFormData((prev) => ({ ...prev, contents: updated }));
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (type) => {
     try {
       const form = new FormData();
       if (formData.title) form.append("title", formData.title);
       if (formData.category) form.append("categoryId", formData.category);
       if (formData.description) form.append("description", formData.description);
       if (formData.image instanceof File) form.append("photo", formData.image);
-      form.append("status", "published");
+      form.append("articleType", type); // DRAFT or PUBLISHED
 
       for (const step of formData.contents) {
         form.append("recipes", step);
@@ -96,7 +96,7 @@ const NewArticlePage = () => {
       Swal.fire({
         icon: "success",
         title: "Success",
-        text: "Article created successfully!",
+        text: type === "PUBLISHED" ? "Article published!" : "Draft saved!",
         timer: 1500,
         showConfirmButton: false,
       }).then(() => {
@@ -210,15 +210,31 @@ const NewArticlePage = () => {
           </button>
         </div>
 
-        {/* Submit Button */}
-        <div className="flex items-center justify-end mt-6">
+        {/* Action Buttons */}
+        <div className="flex flex-wrap gap-3 justify-end mt-6">
           <motion.button
             whileTap={{ scale: 0.95 }}
+            onClick={() => navigate("/articles/list")}
+            className="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-600 transition font-semibold"
+          >
+            Cancel
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => handleSubmit("DRAFT")}
+            className="bg-gray-400 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-500 transition font-semibold"
+          >
+            Save as Draft
+          </motion.button>
+
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => handleSubmit("PUBLISHED")}
             className="bg-orange-500 text-white px-4 py-2 rounded-lg shadow hover:bg-orange-600 transition font-semibold"
-            onClick={handleSubmit}
           >
             Publish
           </motion.button>
+
         </div>
       </motion.div>
     </div>
