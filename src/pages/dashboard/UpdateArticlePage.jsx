@@ -15,6 +15,7 @@ const UpdateArticlePage = () => {
     recipes: [{ id: null, step: "" }],
   });
 
+  const [articleType, setArticleType] = useState("DRAFT");
   const [originalRecipeIds, setOriginalRecipeIds] = useState([]);
   const [imagePreview, setImagePreview] = useState(null);
   const [categories, setCategories] = useState([]);
@@ -23,9 +24,7 @@ const UpdateArticlePage = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch(
-          `${import.meta.env.VITE_BACKEND_API}/categories`
-        );
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_API}/categories`);
         const result = await res.json();
         setCategories(result.data || []);
       } catch (error) {
@@ -35,12 +34,9 @@ const UpdateArticlePage = () => {
 
     const fetchArticle = async () => {
       try {
-        const res = await fetch(
-          `${import.meta.env.VITE_BACKEND_API}/articles/${id}`
-        );
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_API}/articles/${id}`);
         const result = await res.json();
-        if (!res.ok)
-          throw new Error(result.message || "Failed to fetch article");
+        if (!res.ok) throw new Error(result.message || "Failed to fetch article");
 
         const data = result.data;
         const fetchedRecipes = (data.recipes || []).map((r) => ({
@@ -53,11 +49,10 @@ const UpdateArticlePage = () => {
           categoryId: data.category_id?.toString() || "",
           description: data.description || "",
           image: null,
-          recipes: fetchedRecipes.length
-            ? fetchedRecipes
-            : [{ id: null, step: "" }],
+          recipes: fetchedRecipes.length ? fetchedRecipes : [{ id: null, step: "" }],
         });
 
+        setArticleType(data.articleType || "DRAFT");
         setOriginalRecipeIds(fetchedRecipes.map((r) => r.id));
         setImagePreview(data.photo_url || null);
       } catch (error) {
@@ -105,24 +100,19 @@ const UpdateArticlePage = () => {
   };
 
   const handleSubmit = async () => {
-    if (!formData.title.trim()) {
-      return Swal.fire(
-        "Validation Error",
-        "Title must not be empty!",
-        "warning"
-      );
-    }
+    // Validasi hanya jika user ingin publish
+    if (articleType === "PUBLISHED") {
+      if (!formData.title.trim()) {
+        return Swal.fire("Validation Error", "Title must not be empty!", "warning");
+      }
 
-    if (!formData.categoryId) {
-      return Swal.fire("Validation Error", "Choose a category!", "warning");
-    }
+      if (!formData.categoryId) {
+        return Swal.fire("Validation Error", "Choose a category!", "warning");
+      }
 
-    if (formData.recipes.some((r) => !r.step.trim())) {
-      return Swal.fire(
-        "Validation Error",
-        "Recipe steps cannot be empty!",
-        "warning"
-      );
+      if (formData.recipes.some((r) => !r.step.trim())) {
+        return Swal.fire("Validation Error", "Recipe steps cannot be empty!", "warning");
+      }
     }
 
     try {
@@ -132,11 +122,11 @@ const UpdateArticlePage = () => {
         return Swal.fire("Authentication Error", "Token not found.", "error");
       }
 
-      // 1. Update article first
       const form = new FormData();
       form.append("title", formData.title);
       form.append("categoryId", formData.categoryId);
       form.append("description", formData.description);
+      form.append("articleType", articleType); // Tambahkan status
       if (formData.image) form.append("photo", formData.image);
 
       const articleRes = await fetch(
@@ -157,13 +147,11 @@ const UpdateArticlePage = () => {
         );
       }
 
-      // 2. Handle recipes in sequence
       const currentIds = formData.recipes.filter((r) => r.id).map((r) => r.id);
       const deletedIds = originalRecipeIds.filter(
         (oid) => !currentIds.includes(oid)
       );
 
-      // Delete removed recipes
       await Promise.all(
         deletedIds.map((recipeId) =>
           fetch(`${import.meta.env.VITE_BACKEND_API}/recipes/${recipeId}`, {
@@ -173,7 +161,6 @@ const UpdateArticlePage = () => {
         )
       );
 
-      // Process recipes (update existing or create new)
       const recipesPromises = formData.recipes.map(async (recipe) => {
         const payload = {
           article_id: parseInt(id),
@@ -181,7 +168,6 @@ const UpdateArticlePage = () => {
         };
 
         if (recipe.id) {
-          // Update existing recipe
           return fetch(
             `${import.meta.env.VITE_BACKEND_API}/recipes/${recipe.id}`,
             {
@@ -194,7 +180,6 @@ const UpdateArticlePage = () => {
             }
           );
         } else {
-          // Create new recipe
           return fetch(
             `${import.meta.env.VITE_BACKEND_API}/recipes/articles/${id}`,
             {
@@ -203,29 +188,22 @@ const UpdateArticlePage = () => {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
               },
-              body: JSON.stringify({
-                data: [{ content: recipe.step }],
-              }),
+              body: JSON.stringify({ data: [{ content: recipe.step }] }),
             }
           );
         }
       });
 
-      // Wait for all recipe operations to complete
       const recipesResults = await Promise.all(recipesPromises);
-
-      // Check if any recipe operation failed
       const failedRecipe = recipesResults.find((res) => !res.ok);
       if (failedRecipe) {
         const errorData = await failedRecipe.json();
         throw new Error(errorData.message || "Failed to process some recipes");
       }
 
-      Swal.fire("Success", "Article updated successfully!", "success").then(
-        () => {
-          navigate("/articles/list");
-        }
-      );
+      Swal.fire("Success", "Article updated successfully!", "success").then(() => {
+        navigate("/articles/list");
+      });
     } catch (err) {
       console.error("Update failed:", err);
       Swal.fire("Error", err.message || "Something went wrong.", "error");
@@ -236,9 +214,7 @@ const UpdateArticlePage = () => {
 
   return (
     <div className="min-h-screen bg-orange-50 p-6">
-      <h1 className="text-2xl font-bold text-orange-700 mb-6">
-        Update Article
-      </h1>
+      <h1 className="text-2xl font-bold text-orange-700 mb-6">Update Article</h1>
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -259,9 +235,7 @@ const UpdateArticlePage = () => {
 
         {/* Upload Photo */}
         <div>
-          <label className="block text-sm font-semibold mb-1">
-            Upload Photo
-          </label>
+          <label className="block text-sm font-semibold mb-1">Upload Photo</label>
           <input
             type="file"
             accept="image/*"
@@ -279,9 +253,7 @@ const UpdateArticlePage = () => {
 
         {/* Select Category */}
         <div>
-          <label className="block text-sm font-semibold mb-1">
-            Select Category
-          </label>
+          <label className="block text-sm font-semibold mb-1">Select Category</label>
           <select
             name="categoryId"
             value={formData.categoryId}
@@ -297,11 +269,22 @@ const UpdateArticlePage = () => {
           </select>
         </div>
 
+        {/* Status */}
+        <div>
+          <label className="block text-sm font-semibold mb-1">Status</label>
+          <select
+            value={articleType}
+            onChange={(e) => setArticleType(e.target.value)}
+            className="w-full p-3 border rounded bg-orange-100 focus:outline-none focus:ring-2 focus:ring-orange-400"
+          >
+            <option value="DRAFT">Save as Draft</option>
+            <option value="PUBLISHED">Publish</option>
+          </select>
+        </div>
+
         {/* Description */}
         <div>
-          <label className="block text-sm font-semibold mb-1">
-            Description
-          </label>
+          <label className="block text-sm font-semibold mb-1">Description</label>
           <textarea
             name="description"
             value={formData.description}
@@ -313,9 +296,7 @@ const UpdateArticlePage = () => {
 
         {/* Recipe Steps */}
         <div>
-          <label className="block text-sm font-semibold mb-1">
-            Recipe Steps
-          </label>
+          <label className="block text-sm font-semibold mb-1">Recipe Steps</label>
           {formData.recipes.map((r, i) => (
             <div key={i} className="flex items-start gap-2 mb-2">
               <textarea
