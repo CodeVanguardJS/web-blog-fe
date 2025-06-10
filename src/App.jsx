@@ -72,7 +72,6 @@ const App = () => {
           <Route path="/categories" element={<CategoriesAdminPage />} />
           <Route path="/profile/update" element={<UpdateProfilePage />} />
           <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/articles/create" element={<NewArticlePage />} />
           <Route path="/articles/update/:id" element={<UpdateArticlePage />} />
 
           </Route>
