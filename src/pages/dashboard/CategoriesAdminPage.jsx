@@ -1,90 +1,47 @@
 /* eslint-disable react/prop-types */
-import { useEffect, useState } from "react";
+import { useCategory } from "../../hooks/useCategory";
+import { useState } from "react";
 
 const CategoriesAdminPage = () => {
-  // State untuk modal
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
 
-  // State untuk input form
-  const [categoryName, setCategoryName] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const {
+    categories,
+    categoryName,
+    setCategoryName,
+    selectedCategory,
+    setSelectedCategory,
+    isCreateModalOpen,
+    setIsCreateModalOpen,
+    isUpdateModalOpen,
+    setIsUpdateModalOpen,
+    isDeleteModalOpen,
+    setIsDeleteModalOpen,
+    handleCreateCategory,
+    handleUpdateCategory,
+    handleDeleteCategory,
+  } = useCategory();
 
-  // Data dummy untuk kategori
-  const [categories, setCategories] = useState([  ]);
-
-  useEffect(() => {
-    fetch(`${import.meta.env.VITE_BACKEND_API}/categories`)
-      .then((res) => res.json())
-      .then((categories) => setCategories(categories.data))
-      .catch((error) => console.error("Error fetching categories:", error));
-  }, []);
-
-  // Fungsi Tambah Kategori
-  const handleCreateCategory = () => {
-    const newCategory = {
-      name: categoryName,
-      // slug: categoryName.toLowerCase(),
-    };
-
-    fetch(`${import.meta.env.VITE_BACKEND_API}/categories`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newCategory),
-    })
-      .then(async (res) => {
-        const text = await res.text();
-        console.log("Raw response:", text); // Debugging
-        return JSON.parse(text);
-      })
-      .then((category) => {
-        setCategories([...categories, category.data]);
-        setCategoryName("");
-        setIsCreateModalOpen(false);
-      })
-      .catch((error) => console.error("Error adding category:", error));
+  const openUpdateModal = (category) => {
+    setSelectedCategory(category);
+    setCategoryName(category.name);
+    setIsUpdateModalOpen(true);
   };
 
-  // Fungsi Update Kategori
-  const handleUpdateCategory = () => {
-    if (!selectedCategory) return;
-
-    fetch(`${import.meta.env.VITE_BACKEND_API}/categories/${selectedCategory.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: categoryName,
-        // slug: categoryName.toLowerCase(),
-      }),
-    })
-      .then((res) => res.json())
-      .then((updatedCategory) => {
-        setCategories(
-          categories.map((cat) =>
-            cat.id === selectedCategory.id ? updatedCategory.data : cat
-          )
-        );
-        setIsUpdateModalOpen(false);
-      })
-      .catch((error) => console.error("Error updating category:", error));
+  const openDeleteModal = (category) => {
+    setSelectedCategory(category);
+    setIsDeleteModalOpen(true);
   };
 
-  // Fungsi Delete Kategori
-  const handleDeleteCategory = () => {
-    if (!selectedCategory) return;
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentCategories = categories.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(categories.length / itemsPerPage);
 
-    fetch(
-      `${import.meta.env.VITE_BACKEND_API}/categories/${selectedCategory.id}`,
-      { method: "DELETE" }
-    )
-      .then(() => {
-        setCategories(
-          categories.filter((cat) => cat.id !== selectedCategory.id)
-        );
-        setIsDeleteModalOpen(false);
-      })
-      .catch((error) => console.error("Error deleting category:", error));
+  const goToPage = (page) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
   };
 
   return (
@@ -112,7 +69,7 @@ const CategoriesAdminPage = () => {
             </tr>
           </thead>
           <tbody>
-            {categories.map((category) => (
+            {currentCategories.map((category) => (
               <tr key={category.id} className="hover:bg-gray-50">
                 <td className="border border-gray-300 px-4 py-2">
                   {category.name}
@@ -126,7 +83,7 @@ const CategoriesAdminPage = () => {
                     onClick={() => {
                       setSelectedCategory(category);
                       setCategoryName(category.name);
-                      setIsUpdateModalOpen(true);
+                      openUpdateModal(category);
                     }}
                   >
                     Edit
@@ -135,7 +92,7 @@ const CategoriesAdminPage = () => {
                     className="px-3 py-1 text-white bg-red-500 rounded-md hover:bg-red-600 transition ml-2"
                     onClick={() => {
                       setSelectedCategory(category);
-                      setIsDeleteModalOpen(true);
+                      openDeleteModal(category);
                     }}
                   >
                     Delete
@@ -145,6 +102,60 @@ const CategoriesAdminPage = () => {
             ))}
           </tbody>
         </table>
+
+        {/* Pagination Controls */}
+        <div className="flex items-center gap-2 mt-4">
+          <button
+            onClick={() => goToPage(currentPage - 1)}
+            disabled={currentPage === 1}
+            className={`px-3 py-1 border rounded ${
+              currentPage === 1
+                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                : "hover:bg-gray-100"
+            }`}
+          >
+            Prev
+          </button>
+
+          {Array.from({ length: totalPages }, (_, i) => i + 1)
+            .filter(
+              (page) =>
+                page === 1 ||
+                page === totalPages ||
+                (page >= currentPage - 2 && page <= currentPage + 2)
+            )
+            .map((page, index, arr) => (
+              <div key={page} className="inline-block">
+                {index > 0 && page - arr[index - 1] > 1 && (
+                  <span className="mx-1">...</span>
+                )}
+                <button
+                  onClick={() => goToPage(page)}
+                  className={`px-3 py-1 border rounded ${
+                    currentPage === page
+                      ? "bg-blue-500 text-white"
+                      : "hover:bg-gray-100"
+                  }`}
+                >
+                  {page}
+                </button>
+              </div>
+            ))}
+
+          <button
+            onClick={() => goToPage(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className={`px-3 py-1 border rounded ${
+              currentPage === totalPages
+                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                : "hover:bg-gray-100"
+            }`}
+          >
+            Next
+          </button>
+        </div>
+      </div>
+      {/*
       </div>
 
       {/* MODAL CREATE */}
@@ -241,12 +252,12 @@ const Modal = ({ title, children, onClose }) => (
 // Component Button Reusable
 // eslint-disable-next-line no-unused-vars
 const Button = ({ text, color, onClick }) => (
-//   <button
-//     className={`px-4 py-2 text-white rounded-md hover:bg-${color}-700 transition mx-1 bg-${color}-600`}
-//     onClick={onClick}
-//   >
-//     {text}
-//   </button>
+  //   <button
+  //     className={`px-4 py-2 text-white rounded-md hover:bg-${color}-700 transition mx-1 bg-${color}-600`}
+  //     onClick={onClick}
+  //   >
+  //     {text}
+  //   </button>
   <button
     className={`px-4 py-2  rounded-md hover:bg-yellow-700 transition mx-1 bg-yellow-600`}
     onClick={onClick}

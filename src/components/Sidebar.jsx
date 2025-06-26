@@ -17,7 +17,7 @@ const SideBar = () => {
             <ul className="flex flex-col gap-3 w-full text-center">
               <li className="hover:bg-orange-800 w-full py-5">
                 <Link
-                  to="/dashboard"
+                  to="/profile"
                   className="text-white hover:text-secondary"
                 >
                   Profile
