@@ -5,13 +5,19 @@ const LoginPage = () => {
   const { formData, error, handleInputChange, handleSubmit } = useLogin();
 
   return (
-    <div className="min-h-screen flex bg-backgroundlight">
+    <div className="min-h-screen flex flex-col md:flex-row bg-backgroundlight">
       {/* Left Side - Form */}
-      <div className="w-full md:w-1/3 bg-primary text-white flex items-center justify-center">
-        <form onSubmit={handleSubmit} noValidate className="space-y-6 w-3/4">
-          <h1 className="text-3xl font-bold text-center">Login Account</h1>
+      <div className="w-full min-h-screen md:min-h-0 md:h-auto md:w-1/2 lg:w-1/3 bg-primary text-white flex items-center justify-center py-10 px-6">
+        <form
+          onSubmit={handleSubmit}
+          noValidate
+          className="space-y-6 w-full max-w-md"
+        >
+          <h1 className="text-2xl sm:text-3xl font-bold text-center">
+            Login Account
+          </h1>
 
-          {error && <p className="text-red-950">{error}</p>}
+          {error && <p className="text-red-950 text-sm">{error}</p>}
 
           <input
             type="email"
@@ -30,7 +36,12 @@ const LoginPage = () => {
             className="w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-highlightAction bg-backgroundlight text-backgrounddark"
           />
 
-          <p>Doesn&apos;t have an account? <Link to="/register" className="text-highlightAction">Register</Link></p>
+          <p className="text-sm">
+            Don&apos;t have an account?{" "}
+            <Link to="/register" className="text-highlightAction">
+              Register
+            </Link>
+          </p>
 
           <button
             type="submit"
@@ -42,23 +53,46 @@ const LoginPage = () => {
       </div>
 
       {/* Right Side - Text */}
-      <div
-        className="w-full md:w-2/3 flex items-center justify-center bg-cover bg-center "
+      {/* <div
+        className="w-full md:w-1/2 lg:w-2/3 hidden md:flex items-center justify-center bg-cover bg-center px-6 py-10"
         style={{
           backgroundImage:
             "url('https://media-cdn.grubhub.com/grubhub-marketing/image/upload/f_auto,fl_lossy/v1692270106/grubhubHomePage/sushi_homepage1.png')",
-          backgroundSize: "cover",
-          backgroundRepeat: "no-repeat",
-          imageRendering: "auto",
         }}
       >
-        <div className="w-3/4 mx-auto">
-          <h2 className="font-display text-4xl font-bold text-white mb-6">
+        <div className="w-full max-w-2xl bg-white bg-opacity-70 rounded-lg p-6 shadow-md">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary mb-4">
             Welcome!
           </h2>
-          <p className="font-sans px-2 text-backgrounddark text-xl text-justify font-bold leading-relaxed bg-slate-100 rounded-md bg-opacity-50">
+          <p className="text-base sm:text-lg text-backgrounddark font-medium leading-relaxed text-justify">
             Welcome back to{" "}
-            <span className="text-primary"> Whisk Takers! </span>
+            <span className="text-highlightAction font-semibold">Whisk Takers!</span>{" "}
+            Ready to continue your culinary journey? Log in to access your saved
+            recipes, explore new flavors, and connect with a community of fearless
+            food lovers. Whether you&apos;re here to revisit a favorite dish or try
+            something bold and new, your next delicious adventure starts now.
+            Let’s get whisking!
+          </p>
+        </div>
+      </div> */}
+
+      {/* Right Side - Text */}
+      <div
+        className="hidden md:flex w-full md:w-1/2 lg:w-2/3 items-center justify-center bg-cover bg-center px-6 py-10"
+        style={{
+          backgroundImage:
+            "url('https://media-cdn.grubhub.com/grubhub-marketing/image/upload/f_auto,fl_lossy/v1692270106/grubhubHomePage/sushi_homepage1.png')",
+        }}
+      >
+        <div className="w-full max-w-2xl bg-white bg-opacity-70 rounded-lg p-6 shadow-md">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary mb-4">
+            Welcome!
+          </h2>
+          <p className="text-base sm:text-lg text-backgrounddark font-medium leading-relaxed text-justify">
+            Welcome back to{" "}
+            <span className="text-highlightAction font-semibold">
+              Whisk Takers!
+            </span>{" "}
             Ready to continue your culinary journey? Log in to access your saved
             recipes, explore new flavors, and connect with a community of
             fearless food lovers. Whether you&apos;re here to revisit a favorite
