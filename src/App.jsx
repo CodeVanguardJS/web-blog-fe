@@ -70,6 +70,7 @@ const App = () => {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/articles/list" element={<ArticleTablePage />} />
           <Route path="/categories" element={<CategoriesAdminPage />} />
+          <Route path="/articles/create" element={<NewArticlePage />} />
           <Route path="/profile/update" element={<UpdateProfilePage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/articles/update/:id" element={<UpdateArticlePage />} />
