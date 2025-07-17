@@ -1,6 +1,8 @@
 /* eslint-disable react/prop-types */
-import { useCategory } from "../../hooks/useCategory";
 import { useState } from "react";
+import { useCategory } from "../../hooks/useCategory";
+import { motion, AnimatePresence } from "framer-motion";
+import { Plus, Pencil, Trash2 } from "lucide-react";
 
 const CategoriesAdminPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -29,6 +31,12 @@ const CategoriesAdminPage = () => {
     setIsUpdateModalOpen(true);
   };
 
+  const closeUpdateModal = () => {
+    setSelectedCategory();
+    setCategoryName("");
+    setIsUpdateModalOpen(false);
+  };
+
   const openDeleteModal = (category) => {
     setSelectedCategory(category);
     setIsDeleteModalOpen(true);
@@ -45,72 +53,59 @@ const CategoriesAdminPage = () => {
   };
 
   return (
-    <div className="p-6 bg-white shadow-md rounded-lg w-full h-full">
-      <h1 className="text-3xl font-semibold mb-5">Categories</h1>
+    <div className="p-6 bg-white shadow-md rounded-xl w-full h-full">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-slate-800">📁 Category Manager</h1>
+        <button
+          onClick={() => setIsCreateModalOpen(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all"
+        >
+          <Plus size={18} />
+          <span className="hidden md:inline">Create Category</span>
+        </button>
+      </div>
 
-      {/* Tombol Create */}
-      <button
-        className="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
-        onClick={() => setIsCreateModalOpen(true)}
-      >
-        + Create Category
-      </button>
-
-      {/* Table */}
-      <div className="mt-5 overflow-x-auto">
-        <table className="w-full border-collapse border border-gray-200">
-          <thead className="bg-gray-100">
-            <tr className="text-left">
-              <th className="border border-gray-300 px-4 py-2">Categories</th>
-              <th className="border border-gray-300 px-4 py-2">Slug</th>
-              <th className="border border-gray-300 px-4 py-2 text-center">
-                Action
-              </th>
+      <div className="overflow-x-auto rounded-lg border">
+        <table className="min-w-full text-sm text-left text-gray-700">
+          <thead className="bg-gray-100 text-xs uppercase font-semibold text-gray-600">
+            <tr>
+              <th className="px-6 py-3">Category</th>
+              <th className="px-6 py-3 text-center">Action</th>
             </tr>
           </thead>
           <tbody>
             {currentCategories.map((category) => (
-              <tr key={category.id} className="hover:bg-gray-50">
-                <td className="border border-gray-300 px-4 py-2">
-                  {category.name}
-                </td>
-                <td className="border border-gray-300 px-4 py-2 text-gray-500">
-                  {category.slug}
-                </td>
-                <td className="border border-gray-300 px-4 py-2 text-center">
-                  <button
-                    className="px-3 py-1 text-white bg-yellow-500 rounded-md hover:bg-yellow-600 transition"
-                    onClick={() => {
-                      setSelectedCategory(category);
-                      setCategoryName(category.name);
-                      openUpdateModal(category);
-                    }}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="px-3 py-1 text-white bg-red-500 rounded-md hover:bg-red-600 transition ml-2"
-                    onClick={() => {
-                      setSelectedCategory(category);
-                      openDeleteModal(category);
-                    }}
-                  >
-                    Delete
-                  </button>
+              <tr key={category.id} className="hover:bg-gray-50 border-b">
+                <td className="px-6 py-3">{category.name}</td>
+                <td className="px-6 py-3 text-center">
+                  <div className="flex justify-center gap-2">
+                    <Button
+                      icon={Pencil}
+                      text="Edit"
+                      color="yellow"
+                      onClick={() => openUpdateModal(category)}
+                    />
+                    <Button
+                      icon={Trash2}
+                      text="Delete"
+                      color="red"
+                      onClick={() => openDeleteModal(category)}
+                    />
+                  </div>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
 
-        {/* Pagination Controls */}
-        <div className="flex items-center gap-2 mt-4">
+        {/* Pagination */}
+        <div className="flex flex-wrap justify-center gap-2 mt-6">
           <button
             onClick={() => goToPage(currentPage - 1)}
             disabled={currentPage === 1}
-            className={`px-3 py-1 border rounded ${
+            className={`px-3 py-1 border rounded-md transition-all ${
               currentPage === 1
-                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                 : "hover:bg-gray-100"
             }`}
           >
@@ -124,14 +119,12 @@ const CategoriesAdminPage = () => {
                 page === totalPages ||
                 (page >= currentPage - 2 && page <= currentPage + 2)
             )
-            .map((page, index, arr) => (
-              <div key={page} className="inline-block">
-                {index > 0 && page - arr[index - 1] > 1 && (
-                  <span className="mx-1">...</span>
-                )}
+            .map((page, i, arr) => (
+              <span key={page} className="inline-block">
+                {i > 0 && page - arr[i - 1] > 1 && <span className="mx-1">...</span>}
                 <button
                   onClick={() => goToPage(page)}
-                  className={`px-3 py-1 border rounded ${
+                  className={`px-3 py-1 border rounded-md transition-all ${
                     currentPage === page
                       ? "bg-blue-500 text-white"
                       : "hover:bg-gray-100"
@@ -139,15 +132,15 @@ const CategoriesAdminPage = () => {
                 >
                   {page}
                 </button>
-              </div>
+              </span>
             ))}
 
           <button
             onClick={() => goToPage(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className={`px-3 py-1 border rounded ${
+            className={`px-3 py-1 border rounded-md transition-all ${
               currentPage === totalPages
-                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                 : "hover:bg-gray-100"
             }`}
           >
@@ -155,115 +148,98 @@ const CategoriesAdminPage = () => {
           </button>
         </div>
       </div>
-      {/*
-      </div>
 
-      {/* MODAL CREATE */}
-      {isCreateModalOpen && (
-        <Modal
-          title="Create New Category"
-          onClose={() => setIsCreateModalOpen(false)}
-        >
-          <input
-            type="text"
-            className="w-full p-2 border rounded-md mb-4 bg-white text-slate-800"
-            placeholder="Enter category name"
-            value={categoryName}
-            onChange={(e) => setCategoryName(e.target.value)}
-          />
-          <div className="flex justify-end">
-            <Button
-              text="Cancel"
-              color="gray"
-              onClick={() => setIsCreateModalOpen(false)}
+      {/* MODALS */}
+      <AnimatePresence>
+        {isCreateModalOpen && (
+          <Modal title="Create Category" onClose={() => setIsCreateModalOpen(false)}>
+            <input
+              type="text"
+              className="w-full p-2 border rounded-md mb-4 bg-white text-slate-800"
+              placeholder="Enter category name"
+              value={categoryName}
+              onChange={(e) => setCategoryName(e.target.value)}
             />
-            <Button text="Create" color="blue" onClick={handleCreateCategory} />
-          </div>
-        </Modal>
-      )}
+            <div className="flex justify-end gap-2">
+              <Button text="Cancel" color="gray" onClick={() => setIsCreateModalOpen(false)} />
+              <Button text="Create" color="blue" onClick={handleCreateCategory} icon={Plus} />
+            </div>
+          </Modal>
+        )}
 
-      {/* MODAL UPDATE */}
-      {isUpdateModalOpen && (
-        <Modal
-          title="Update Category"
-          onClose={() => setIsUpdateModalOpen(false)}
-        >
-          <input
-            type="text"
-            className="w-full p-2 border rounded-md mb-4 bg-white text-slate-800"
-            value={categoryName}
-            onChange={(e) => setCategoryName(e.target.value)}
-          />
-          <div className="flex justify-end">
-            <Button
-              text="Cancel"
-              color="gray"
-              onClick={() => setIsUpdateModalOpen(false)}
+        {isUpdateModalOpen && (
+          <Modal title="Update Category" onClose={closeUpdateModal}>
+            <input
+              type="text"
+              className="w-full p-2 border rounded-md mb-4 bg-white text-slate-800"
+              value={categoryName}
+              onChange={(e) => setCategoryName(e.target.value)}
             />
-            <Button
-              text="Update"
-              color="yellow"
-              onClick={handleUpdateCategory}
-            />
-          </div>
-        </Modal>
-      )}
+            <div className="flex justify-end gap-2">
+              <Button text="Cancel" color="gray" onClick={closeUpdateModal} />
+              <Button text="Update" color="yellow" onClick={handleUpdateCategory} icon={Pencil} />
+            </div>
+          </Modal>
+        )}
 
-      {/* MODAL DELETE */}
-      {isDeleteModalOpen && (
-        <Modal
-          title="Delete Category"
-          onClose={() => setIsDeleteModalOpen(false)}
-        >
-          <p className="mb-4">
-            Are you sure you want to delete{" "}
-            <strong>{selectedCategory?.name}</strong>?
-          </p>
-          <div className="flex justify-end">
-            <Button
-              text="Cancel"
-              color="gray"
-              onClick={() => setIsDeleteModalOpen(false)}
-            />
-            <Button text="Delete" color="red" onClick={handleDeleteCategory} />
-          </div>
-        </Modal>
-      )}
+        {isDeleteModalOpen && (
+          <Modal title="Delete Category" onClose={() => setIsDeleteModalOpen(false)}>
+            <p className="mb-4">
+              Are you sure you want to delete <strong>{selectedCategory?.name}</strong>?
+            </p>
+            <div className="flex justify-end gap-2">
+              <Button text="Cancel" color="gray" onClick={() => setIsDeleteModalOpen(false)} />
+              <Button text="Delete" color="red" onClick={handleDeleteCategory} icon={Trash2} />
+            </div>
+          </Modal>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
 
-// Component Modal Reusable
 const Modal = ({ title, children, onClose }) => (
-  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-    <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
-      <h2 className="text-2xl font-semibold mb-4">{title}</h2>
+  <motion.div
+    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+  >
+    <motion.div
+      className="bg-white rounded-xl p-6 shadow-xl w-full max-w-md relative"
+      initial={{ scale: 0.8, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      exit={{ scale: 0.8, opacity: 0 }}
+    >
+      <h2 className="text-xl font-semibold mb-4">{title}</h2>
       {children}
       <button
-        className="absolute top-2 right-3 text-gray-600"
+        className="absolute top-3 right-4 text-gray-500 text-xl hover:text-gray-700"
         onClick={onClose}
       >
         &times;
       </button>
-    </div>
-  </div>
+    </motion.div>
+  </motion.div>
 );
 
-// Component Button Reusable
-// eslint-disable-next-line no-unused-vars
-const Button = ({ text, color, onClick }) => (
-  //   <button
-  //     className={`px-4 py-2 text-white rounded-md hover:bg-${color}-700 transition mx-1 bg-${color}-600`}
-  //     onClick={onClick}
-  //   >
-  //     {text}
-  //   </button>
-  <button
-    className={`px-4 py-2  rounded-md hover:bg-yellow-700 transition mx-1 bg-yellow-600`}
-    onClick={onClick}
-  >
-    {text}
-  </button>
-);
+const Button = ({ text, color, onClick, icon: Icon }) => {
+  const colorMap = {
+    gray: "bg-gray-400 hover:bg-gray-500",
+    blue: "bg-blue-600 hover:bg-blue-700",
+    red: "bg-red-500 hover:bg-red-600",
+    yellow: "bg-yellow-500 hover:bg-yellow-600",
+  };
+
+  return (
+    <button
+      onClick={onClick}
+      className={`flex items-center justify-center gap-2 px-3 py-2 text-white rounded-md transition-all ${colorMap[color]}`}
+    >
+      {Icon && <Icon size={18} />}
+      <span className="hidden sm:inline">{text}</span>
+    </button>
+  );
+};
 
 export default CategoriesAdminPage;
