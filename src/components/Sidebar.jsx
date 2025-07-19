@@ -44,6 +44,14 @@ const SideBar = () => {
                   Categories
                 </Link>
               </li>
+              <li className="hover:bg-orange-800 w-full py-5">
+                <Link
+                  to="/"
+                  className="text-white hover:text-secondary"
+                >
+                  Home
+                </Link>
+              </li>
             </ul>
           </nav>
         </div>
