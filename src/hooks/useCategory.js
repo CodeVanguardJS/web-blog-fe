@@ -41,6 +41,8 @@ export const useCategory = () => {
           )
         );
         setIsUpdateModalOpen(false);
+        setSelectedCategory(null);
+        setCategoryName("");
       })
       .catch((err) => console.error("Error updating category:", err));
   };
