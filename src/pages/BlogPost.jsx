@@ -23,10 +23,24 @@ const BlogPost = () => {
 
   useEffect(() => {
     const fetchArticle = async () => {
+      setLoading(true);
+
+      setArticle (null);
+      setIsLiked (false);
+      setIsBookmarked (false);
+      setTotalLikes (0);
+
       try {
-        const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_API}/articles/${id}`
-        );
+        const token = localStorage.getItem("token");
+        const response =await fetch (
+          `${import.meta.env.VITE_BACKEND_API}/articles/${id}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              ...(token && { Authorization: `Bearer ${token}`})
+            },
+          }
+        )
         const data = await response.json();
 
         if (data && data.data) {
