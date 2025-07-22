@@ -50,6 +50,7 @@ const SideBar = () => {
                 { path: "/dashboard", label: "Dashboard" },
                 { path: "/articles/list", label: "Article" },
                 { path: "/categories", label: "Categories" },
+                { path: "/", label: "Home" },
               ].map((item, idx) => (
                 <li
                   key={idx}
