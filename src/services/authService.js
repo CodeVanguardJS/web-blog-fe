@@ -8,10 +8,44 @@ export const loginUser = async (email, password) => {
     }
   );
 
-  const data = await response.json();
+  const user = await response.json();
   if (!response.ok) {
-    throw new Error(data.error || "Login failed");
+    throw new Error(user.error || "Login failed");
   }
 
-  return data;
+  localStorage.setItem("token", user.data.token);
+  console.log(`loginUser`, user);
+  return user.data;
+};
+
+export const fetchCurrentUser = async () => {
+  const token = localStorage.getItem("token");
+  const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/auth/me`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const user = await response.json();
+  console.log(`user`, user);
+  return user.data;
+};
+
+export const fetchUpdateProfile = async (token, formData) => {
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_BACKEND_API}/auth/me`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      }
+    );
+
+    if (!response.ok) throw new Error("Failed to update profile");
+
+    return await response.json();
+  } catch (error) {
+    console.error("Update error:", error);
+    throw error;
+  }
 };
