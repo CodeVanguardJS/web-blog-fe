@@ -69,9 +69,9 @@ const RegistrationPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-backgroundlight">
+    <div className="min-h-screen flex flex-col md:flex-row bg-backgroundlight">
       {/* Left Side - Form */}
-      <div className="w-full md:w-1/3 bg-primary text-white flex items-center justify-center">
+      <div className="w-full md:w-1/2 lg:w-1/3 bg-primary text-white flex items-center justify-center py-12 px-6">
         <form onSubmit={handleSubmit} noValidate className="space-y-6 w-3/4">
           <h1 className="text-3xl font-bold text-center">Create Account</h1>
 
@@ -122,7 +122,7 @@ const RegistrationPage = () => {
 
       {/* Right Side - Text */}
       <div
-        className="w-full md:w-2/3 flex items-center justify-center bg-cover bg-center "
+        className="w-full md:w-1/2 lg:w-2/3 flex items-center justify-center bg-cover bg-center px-6 py-12"
         style={{
           backgroundImage: "url('/mainfood.jpg')",
           backgroundSize: "cover",
