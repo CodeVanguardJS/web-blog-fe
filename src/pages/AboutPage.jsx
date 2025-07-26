@@ -2,7 +2,7 @@ import Footer from "../components/Footer";
 
 const AboutPage = () => {
   return (
-    <div className="min-h-screen mx-auto p-6 bg-backgroundlight text-backgrounddark">
+    <div className="relative z-0 min-h-screen mx-auto p-6 bg-backgroundlight text-backgrounddark">
       {/* Hero Section */}
       <div
         className="relative bg-cover bg-center h-96"
