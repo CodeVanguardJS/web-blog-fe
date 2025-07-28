@@ -62,17 +62,20 @@ const RegistrationPage = () => {
       }).then(() => {
         navigate("/login", { state: { success: "Registration successful!" } });
       });
-
     } catch (error) {
-      setError(error.message ||"Failed to connect to server");
+      setError(error.message || "Failed to connect to server");
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-backgroundlight">
       {/* Left Side - Form */}
-      <div className="w-full md:w-1/2 lg:w-1/3 bg-primary text-white flex items-center justify-center py-12 px-6">
-        <form onSubmit={handleSubmit} noValidate className="space-y-6 w-3/4">
+      <div className="w-full min-h-screen md:min-h-0 md:h-auto md:w-1/2 lg:w-1/3 bg-primary text-white flex items-center justify-center py-12 px-6">
+        <form
+          onSubmit={handleSubmit}
+          noValidate
+          className="space-y-6 w-full max-w-md"
+        >
           <h1 className="text-3xl font-bold text-center">Create Account</h1>
 
           {error && <p className="text-red">{error}</p>}
@@ -110,7 +113,12 @@ const RegistrationPage = () => {
             onChange={handleInputChange}
             className="w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-highlightAction bg-backgroundlight text-backgrounddark"
           />
-          <p>Already have an account? <Link to="/login" className="text-highlightAction">Login</Link></p>
+          <p>
+            Already have an account?{" "}
+            <Link to="/login" className="text-highlightAction">
+              Login
+            </Link>
+          </p>
           <button
             type="submit"
             className="bg-highlightAction text-backgrounddark font-semibold w-full py-3 rounded-md hover:bg-accent hover:text-white transition-all duration-300"
@@ -122,7 +130,7 @@ const RegistrationPage = () => {
 
       {/* Right Side - Text */}
       <div
-        className="w-full md:w-1/2 lg:w-2/3 flex items-center justify-center bg-cover bg-center px-6 py-12"
+        className="hidden md:flex w-full md:w-1/2 lg:w-2/3 items-center justify-center bg-cover bg-center px-6 py-12"
         style={{
           backgroundImage: "url('/mainfood.jpg')",
           backgroundSize: "cover",
@@ -130,8 +138,8 @@ const RegistrationPage = () => {
           imageRendering: "auto",
         }}
       >
-        <div className="w-3/4 mx-auto">
-          <h2 className="font-display text-4xl font-bold text-backgrounddark mb-6">
+        <div className="w-3/4 mx-auto bg-white bg-opacity-50 p-6">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold text-backgrounddark mb-6">
             Welcome!
           </h2>
           <p className="font-sans px-2 text-backgrounddark text-xl text-justify font-bold leading-relaxed bg-highlightAction rounded-md bg-opacity-50">
